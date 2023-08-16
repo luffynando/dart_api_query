@@ -4,9 +4,12 @@ import 'package:dio/dio.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:test/test.dart';
 
+import '../dummy/data/comments_embed_response.dart';
+import '../dummy/data/comments_response.dart';
 import '../dummy/data/post_embed_response.dart';
 import '../dummy/data/post_response.dart';
 import '../dummy/data/posts_response.dart';
+import '../dummy/models/comment.dart';
 import '../dummy/models/post.dart';
 import '../dummy/models/tag.dart';
 import '../dummy/models/user.dart';
@@ -40,7 +43,7 @@ void main() {
 
         final post = await ApiQuery.of(Post.new).first();
         expect(post.resourceObject, isA<ResourceObject>());
-        expect(post.resourceObject.attributes, equals(postsResponse.first));
+        expect(post.attributes, equals(postsResponse.first));
         expect(post, isA<Post>());
         expect(post.user, isA<User>());
         expect(post.id, equals(1));
@@ -86,7 +89,7 @@ void main() {
         );
 
         final post = await ApiQuery.of(Post.new).firstOrNull();
-        expect(post, equals(null));
+        expect(post, isNull);
       },
     );
 
@@ -101,7 +104,7 @@ void main() {
       );
 
       final post = await ApiQuery.of(Post.new).find(1);
-      expect(post.resourceObject.attributes, equals(postResponse));
+      expect(post.attributes, equals(postResponse));
       expect(post.resourceObject, isA<ResourceObject>());
 
       expect(post, isA<Post>());
@@ -124,7 +127,7 @@ void main() {
       );
 
       final post = await ApiQuery.of(Post.new).find(1);
-      expect(post.resourceObject.attributes, equals(postEmbedResponse['data']));
+      expect(post.attributes, equals(postEmbedResponse['data']));
       expect(post.resourceObject, isA<ResourceObject>());
       expect(post, isA<Post>());
       expect(post.id, equals(1));
@@ -156,12 +159,12 @@ void main() {
 
         final post = await ApiQuery.of(Post.new).find(1);
         expect(
-          post.resourceObject.attributes,
+          post.attributes,
           equals(postResponseWithOutRelations),
         );
         expect(post, isA<Post>());
-        expect(post.user, equals(null));
-        expect(post.relationships['tags'], equals([]));
+        expect(post.user, isNull);
+        expect(post.relationships['tags'], isEmpty);
       },
     );
 
@@ -183,11 +186,11 @@ void main() {
 
         final post = await ApiQuery.of(Post.new).find(1);
         expect(
-          post.resourceObject.attributes,
+          post.attributes,
           equals(postResponseWithSomeRelations),
         );
         expect(post, isA<Post>());
-        expect(post.user, equals(null));
+        expect(post.user, isNull);
         expect(post.relationships['tags'], everyElement(isA<Tag>()));
         expect(post.relationships['tags']!.first.name, equals('super'));
       },
@@ -229,7 +232,7 @@ void main() {
         );
 
         final post = await ApiQuery.of(Post.new).findOrNull(1);
-        expect(post, equals(null));
+        expect(post, isNull);
       },
     );
 
@@ -255,5 +258,119 @@ void main() {
         }
       },
     );
+
+    test('get() hits right resource (nested object)', () async {
+      dioAdapter.onGet(
+        'http://localhost/posts/1/comments',
+        (server) => server.reply(
+          200,
+          commentsResponse,
+          delay: const Duration(milliseconds: 500),
+        ),
+      );
+
+      final post = Post(ResourceObject(1, {}));
+      final comments = await post.comments().get();
+
+      expect(comments, isNotEmpty);
+      expect(comments, everyElement(isA<Comment>()));
+      for (final comment in comments) {
+        expect(comment.replies, isNotEmpty);
+        expect(comment.replies, everyElement(isA<Comment>()));
+      }
+    });
+
+    test('get() hits right resource (nested object, custom PK)', () async {
+      dioAdapter.onGet(
+        'http://localhost/posts/po9996-9dd18/comments',
+        (server) => server.reply(
+          200,
+          commentsResponse,
+          delay: const Duration(milliseconds: 500),
+        ),
+      );
+      final post = Post(ResourceObject('po9996-9dd18', {'id': 1}));
+      final comments = await post.comments().get();
+
+      expect(comments, isNotEmpty);
+      expect(comments, everyElement(isA<Comment>()));
+      for (final comment in comments) {
+        expect(comment.replies, isNotEmpty);
+        expect(comment.replies, everyElement(isA<Comment>()));
+      }
+    });
+
+    test('get() fetch style request with data wrapper', () async {
+      dioAdapter.onGet(
+        'http://localhost/posts',
+        (server) => server.reply(
+          200,
+          postEmbedResponse,
+          delay: const Duration(milliseconds: 500),
+        ),
+      );
+
+      final posts = await ApiQuery.of(Post.new).get();
+      expect(posts, isNotEmpty);
+      expect(posts.first.attributes, equals(postEmbedResponse['data']));
+    });
+
+    test('get() fetch style request without data wrapper', () async {
+      dioAdapter.onGet(
+        'http://localhost/posts',
+        (server) => server.reply(
+          200,
+          postEmbedResponse['data'],
+          delay: const Duration(milliseconds: 500),
+        ),
+      );
+
+      final posts = await ApiQuery.of(Post.new).get();
+      expect(posts, isNotEmpty);
+      expect(posts.first.attributes, equals(postEmbedResponse['data']));
+    });
+
+    test(
+      'get() hits right resource with data wrapper (nested object)',
+      () async {
+        dioAdapter.onGet(
+          'http://localhost/posts/1/comments',
+          (server) => server.reply(
+            200,
+            commentsEmbedResponse,
+            delay: const Duration(milliseconds: 500),
+          ),
+        );
+
+        final post = Post(ResourceObject(1, {}));
+        final comments = await post.comments().get();
+
+        expect(comments, isNotEmpty);
+        expect(comments, everyElement(isA<Comment>()));
+        for (final comment in comments) {
+          expect(comment.replies, isNotEmpty);
+          expect(comment.replies, everyElement(isA<Comment>()));
+        }
+      },
+    );
+
+    test('all() method should be an alias of get() method', () async {
+      dioAdapter.onGet(
+        'http://localhost/posts',
+        (server) => server.reply(
+          200,
+          postsResponse,
+          delay: const Duration(milliseconds: 500),
+        ),
+      );
+
+      final postsAll = await ApiQuery.of(Post.new).all();
+      final postsGet = await ApiQuery.of(Post.new).get();
+
+      expect(
+        postsAll.toList().map((e) => e.attributes),
+        equals(postsGet.toList().map((e) => e.attributes)),
+      );
+    });
   });
 }

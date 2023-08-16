@@ -105,7 +105,7 @@ class Schema {
     T Function(ResourceObject resourceObject) createInstance,
   ) {
     final instance = createInstance(ResourceObject.create({}));
-    final url = '${baseURL()}/${resource()}/$id/${instance.resource()}';
+    final url = '${baseURL() ?? ApiQuery.baseURL}/${resource()}/$id/${instance.resource()}';
 
     return ApiQuery.of(createInstance)..from(url);
   }

@@ -292,9 +292,7 @@ final class ApiQuery<T extends Schema> {
       options: _options,
     );
 
-    if (response.data == null ||
-        (response.data is Map<String, dynamic> &&
-            (response.data as Map<String, dynamic>)['data'] == null)) {
+    if (response.data == null) {
       return null;
     }
 
@@ -302,12 +300,16 @@ final class ApiQuery<T extends Schema> {
     responseData = responseData is Iterable
         ? responseData
         : responseData is Map<String, dynamic>
-            ? responseData['data'] is Iterable
-                ? responseData['data']
-                : responseData['data'] is Map<String, dynamic>
-                    ? [responseData['data']]
-                    : [responseData]
-            : <Map<String, dynamic>>[];
-    return _serializer.deserializeMany(responseData).map(_createInstance);
+            ? responseData.containsKey('data')
+                ? responseData['data'] is Iterable
+                    ? responseData['data']
+                    : responseData['data'] is Map<String, dynamic>
+                        ? [responseData['data']]
+                        : null
+                : [responseData]
+            : null;
+    return responseData != null
+        ? _serializer.deserializeMany(responseData).map(_createInstance)
+        : null;
   }
 }
