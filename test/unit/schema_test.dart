@@ -47,9 +47,7 @@ void main() {
         expect(post.someId, equals('du761-8bc98'));
         expect(post.text, equals('Lorem Ipsum Dolor'));
         expect(post.user!.fullname, equals('John Doe'));
-        for (final tag in post.relationships['tags']!) {
-          expect(tag, isA<Tag>());
-        }
+        expect(post.relationships['tags'], everyElement(isA<Tag>()));
         expect(post.relationships['tags']!.first.name, equals('super'));
       },
     );
@@ -111,9 +109,7 @@ void main() {
       expect(post.someId, equals('af621-4aa41'));
       expect(post.text, equals('Lorem Ipsum Dolor'));
       expect(post.user!.fullname, equals('John Doe'));
-      for (final tag in post.relationships['tags']!) {
-        expect(tag, isA<Tag>());
-      }
+      expect(post.relationships['tags'], everyElement(isA<Tag>()));
       expect(post.relationships['tags']!.first.name, equals('super'));
     });
 
@@ -135,9 +131,7 @@ void main() {
       expect(post.someId, equals('af621-4aa41'));
       expect(post.text, equals('Lorem Ipsum Dolor'));
       expect(post.user!.fullname, equals('John Doe'));
-      for (final tag in post.relationships['tags']!) {
-        expect(tag, isA<Tag>());
-      }
+      expect(post.relationships['tags'], everyElement(isA<Tag>()));
       expect(post.relationships['tags']!.first.name, equals('super'));
     });
 
@@ -146,13 +140,9 @@ void main() {
       () async {
         final postResponseWithOutRelations = <String, dynamic>{}
           ..addAll(postResponse)
+          ..addAll({'user': null})
           ..addAll({
-            'user': null
-          })
-          ..addAll({
-            'relationships': {
-              'tags': <Map<String, String>>[]
-            }
+            'relationships': {'tags': <Map<String, String>>[]}
           });
 
         dioAdapter.onGet(
@@ -180,9 +170,7 @@ void main() {
       () async {
         final postResponseWithSomeRelations = <String, dynamic>{}
           ..addAll(postResponse)
-          ..addAll({
-            'user': null
-          });
+          ..addAll({'user': null});
 
         dioAdapter.onGet(
           'http://localhost/posts/1',
@@ -200,9 +188,7 @@ void main() {
         );
         expect(post, isA<Post>());
         expect(post.user, equals(null));
-        for (final tag in post.relationships['tags']!) {
-          expect(tag, isA<Tag>());
-        }
+        expect(post.relationships['tags'], everyElement(isA<Tag>()));
         expect(post.relationships['tags']!.first.name, equals('super'));
       },
     );
@@ -244,6 +230,29 @@ void main() {
 
         final post = await ApiQuery.of(Post.new).findOrNull(1);
         expect(post, equals(null));
+      },
+    );
+
+    test(
+      'get() method returns a array of objects as instance of suchSchema',
+      () async {
+        dioAdapter.onGet(
+          'http://localhost/posts',
+          (server) => server.reply(
+            200,
+            postsResponse,
+            delay: const Duration(milliseconds: 500),
+          ),
+        );
+
+        final posts = await ApiQuery.of(Post.new).get();
+        expect(posts, isNotEmpty);
+
+        for (final post in posts) {
+          expect(post, isA<Post>());
+          expect(post.user, isA<User>());
+          expect(post.relationships['tags'], everyElement(isA<Tag>()));
+        }
       },
     );
   });

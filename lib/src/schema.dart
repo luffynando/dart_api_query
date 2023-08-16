@@ -1,3 +1,4 @@
+import 'package:dart_api_query/src/api_query.dart';
 import 'package:dart_api_query/src/qs/stringify_options.dart';
 import 'package:dart_api_query/src/query_parameters.dart';
 import 'package:dart_api_query/src/resource_collection.dart';
@@ -97,6 +98,16 @@ class Schema {
     } catch (e) {
       return null;
     }
+  }
+
+  /// Lazy load relationships from model
+  ApiQuery<T> load<T extends Schema>(
+    T Function(ResourceObject resourceObject) createInstance,
+  ) {
+    final instance = createInstance(ResourceObject.create({}));
+    final url = '${baseURL()}/${resource()}/$id/${instance.resource()}';
+
+    return ApiQuery.of(createInstance)..from(url);
   }
 
   /// Check if id is assigned

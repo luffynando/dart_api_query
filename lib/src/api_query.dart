@@ -182,7 +182,8 @@ final class ApiQuery<T extends Schema> {
 
   String? _fromResource;
 
-  void _from(String url) {
+  /// Lazy load relationships of a model an apply model instances to them.
+  void from(String url) {
     _fromResource = url;
   }
 
@@ -208,7 +209,7 @@ final class ApiQuery<T extends Schema> {
 
     url.write('/${_schema.resource()}');
 
-    _from(url.toString());
+    from(url.toString());
   }
 
   /// Retrieve current endpoint.
@@ -230,14 +231,12 @@ final class ApiQuery<T extends Schema> {
 
   /// Execute the query and get all results.
   Future<Iterable<T>> all() async {
-    var base = _fromResource ?? '${baseUrl()}/${_schema.resource()}';
-    base = _customResource != null ? '${baseUrl()}/$_customResource' : base;
-    final url = '$base${_builder.query()}';
-    final response = await ApiQuery.http!.get<dynamic>(
-      url,
-      options: _options,
-    );
-    return _serializer.deserializeMany(response.data).map(_createInstance);
+    return get();
+  }
+
+  /// Execute the query and get all results. If result is null returns null.
+  Future<Iterable<T>?> allOrNull() async {
+    return getOrNull();
   }
 
   /// Execute the query and get first result.
@@ -276,5 +275,39 @@ final class ApiQuery<T extends Schema> {
     }
 
     return _createInstance(_serializer.deserialize(response.data!));
+  }
+
+  /// Execute the query and get all results.
+  Future<Iterable<T>> get() async {
+    return await getOrNull() ?? [];
+  }
+
+  /// Execute the query and get all results. If result is null returns null.
+  Future<Iterable<T>?> getOrNull() async {
+    var base = _fromResource ?? '${baseUrl()}/${_schema.resource()}';
+    base = _customResource != null ? '${baseUrl()}/$_customResource' : base;
+    final url = '$base${_builder.query()}';
+    final response = await ApiQuery.http!.get<dynamic>(
+      url,
+      options: _options,
+    );
+
+    if (response.data == null ||
+        (response.data is Map<String, dynamic> &&
+            (response.data as Map<String, dynamic>)['data'] == null)) {
+      return null;
+    }
+
+    dynamic responseData = response.data;
+    responseData = responseData is Iterable
+        ? responseData
+        : responseData is Map<String, dynamic>
+            ? responseData['data'] is Iterable
+                ? responseData['data']
+                : responseData['data'] is Map<String, dynamic>
+                    ? [responseData['data']]
+                    : [responseData]
+            : <Map<String, dynamic>>[];
+    return _serializer.deserializeMany(responseData).map(_createInstance);
   }
 }
