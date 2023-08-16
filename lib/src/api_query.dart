@@ -1,15 +1,14 @@
 import 'package:dart_api_query/src/builder.dart';
-import 'package:dart_api_query/src/resource_collection.dart';
 import 'package:dart_api_query/src/resource_object.dart';
 import 'package:dart_api_query/src/schema.dart';
 import 'package:dart_api_query/src/serializer.dart';
 import 'package:dio/dio.dart';
 
 /// Adapter for connect with api
-final class ApiQuery {
+final class ApiQuery<T extends Schema> {
   /// Retrieve singleton
-  ApiQuery.of(this._schema, {Options? options})
-      : _builder = Builder(_schema),
+  ApiQuery.of(this._createInstance, {Options? options})
+      : _schema = _createInstance(ResourceObject.create({})),
         _options = options,
         _serializer = Serializer() {
     if (ApiQuery.baseURL == null && _schema.baseURL() == null) {
@@ -21,6 +20,8 @@ final class ApiQuery {
     if (ApiQuery.http == null) {
       throw ArgumentError('You must set ApiQuery.http property.');
     }
+
+    _builder = Builder(_schema);
   }
 
   /// Singleton instance of the HTTP client which is used to make requests.
@@ -29,8 +30,9 @@ final class ApiQuery {
   /// Define a base url for a REST API
   static String? baseURL;
 
-  final Builder _builder;
-  final Schema _schema;
+  late Builder _builder;
+  final T Function(ResourceObject object) _createInstance;
+  final T _schema;
   final Serializer _serializer;
   String? _customResource;
   Options? _options;
@@ -227,7 +229,7 @@ final class ApiQuery {
   }
 
   /// Execute the query and get all results.
-  Future<ResourceCollection> all() async {
+  Future<Iterable<T>> all() async {
     var base = _fromResource ?? '${baseUrl()}/${_schema.resource()}';
     base = _customResource != null ? '${baseUrl()}/$_customResource' : base;
     final url = '$base${_builder.query()}';
@@ -235,16 +237,33 @@ final class ApiQuery {
       url,
       options: _options,
     );
-    return _deserializeMany(response.data);
+    return _serializer.deserializeMany(response.data).map(_createInstance);
   }
 
   /// Execute the query and get first result.
-  Future<ResourceObject?> first() async {
+  /// Throws a StateError if this is null.
+  Future<T> first() async {
+    return all().then((value) => value.first);
+  }
+
+  /// Execute the query and get first result, or null if the result is empty.
+  Future<T?> firstOrNull() async {
     return all().then((value) => value.firstOrNull);
   }
 
   /// Find a model by its primary key.
-  Future<ResourceObject> find(dynamic id) async {
+  /// Throws a StateError if this is null.
+  Future<T> find(dynamic id) async {
+    final result = await findOrNull(id);
+    if (result == null) {
+      throw StateError('No response data or null.');
+    }
+
+    return result;
+  }
+
+  /// Find a model by its primary key, or null if not result.
+  Future<T?> findOrNull(dynamic id) async {
     final base = _fromResource ?? '${baseUrl()}/${_schema.resource()}';
     final url = '$base/$id${_builder.query()}';
     final response = await ApiQuery.http!.get<Map<String, dynamic>>(
@@ -252,10 +271,10 @@ final class ApiQuery {
       options: _options,
     );
 
-    return _serializer.deserialize(response.data!);
-  }
+    if (response.data == null || response.data == <String, dynamic>{}) {
+      return null;
+    }
 
-  ResourceCollection _deserializeMany(dynamic responseData) {
-    return _serializer.deserializeMany(responseData);
+    return _createInstance(_serializer.deserialize(response.data!));
   }
 }

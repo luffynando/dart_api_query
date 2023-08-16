@@ -1,4 +1,4 @@
-const commentsResponse = [
+Iterable<Map<String, dynamic>> commentsResponse = [
   {
     'id': 1,
     'post_id': 1,

@@ -11,7 +11,7 @@ void main() {
       EmptyBaseModel.withBaseURL();
 
       expect(
-        () => ApiQuery.of(EmptyBaseModel.init()),
+        () => ApiQuery.of(EmptyBaseModel.new),
         throwsA(
           (dynamic e) =>
               e is ArgumentError &&
@@ -25,7 +25,7 @@ void main() {
       EmptyBaseModel.withHttp();
 
       expect(
-        () => ApiQuery.of(EmptyBaseModel.init()),
+        () => ApiQuery.of(EmptyBaseModel.new),
         throwsA(
           (dynamic e) =>
               e is ArgumentError &&

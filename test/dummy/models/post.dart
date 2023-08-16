@@ -12,12 +12,9 @@ final class Post extends Schema {
 
   String get someId => getAttribute<String>('someId');
 
-  User? get user => User(deserializeOne(dataForHasOne('user')));
+  User? get user => hasOneOrNull('user', User.new);
 
-  Map<String, List<Tag>> get relationships => {
-        'tags': (getAttribute<Map<String, dynamic>>('relationships')['tags']
-                as List<dynamic>)
-            .map((data) => Tag(deserializeOne(data as Map<String, dynamic>)))
-            .toList()
-      };
+  Map<String, Iterable<Tag>> get relationships {
+    return {'tags': hasManyOrNull('relationships.tags', Tag.new) ?? []};
+  }
 }

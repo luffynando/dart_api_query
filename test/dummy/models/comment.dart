@@ -5,7 +5,6 @@ final class Comment extends Schema {
 
   Comment.init() : super.init();
 
-  Iterable<Comment>? get replies => dataForHasMany('replies')
-      ?.map((data) => deserializeOne(data as Map<String, dynamic>))
-      .map(Comment.new);
+  Iterable<Comment>? get replies =>
+      hasManyOrNull<Comment>('replies', Comment.new);
 }

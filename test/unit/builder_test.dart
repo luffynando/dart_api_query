@@ -14,7 +14,7 @@ void main() {
     });
 
     test('it builds a complex query', () {
-      final post = ApiQuery.of(Post.init())
+      final post = ApiQuery.of(Post.new)
         ..include(['user'])
         ..append(['likes'])
         ..selectFromRelations({
@@ -46,7 +46,7 @@ void main() {
     });
 
     test('it builds a complex query with custom param names', () {
-      final model = ApiQuery.of(ModelWithParamNames.init())
+      final model = ApiQuery.of(ModelWithParamNames.new)
         ..include(['user'])
         ..append(['likes'])
         ..selectFromRelations({
@@ -75,7 +75,7 @@ void main() {
     });
 
     test('it can change default array format option', () {
-      var post = ApiQuery.of(PostWithOptions.init())
+      var post = ApiQuery.of(PostWithOptions.new)
         ..include(['user'])
         ..whereIn('status', ['published', 'archived']);
       expect(
@@ -95,7 +95,7 @@ void main() {
         }),
       );
 
-      post = ApiQuery.of(PostWithOptions.init())
+      post = ApiQuery.of(PostWithOptions.new)
         ..include(['user'])
         ..whereInNested({
           'user': {
@@ -123,47 +123,47 @@ void main() {
     });
 
     test('include() sets properly the builder', () {
-      var post = ApiQuery.of(Post.init())..include(['user']);
+      var post = ApiQuery.of(Post.new)..include(['user']);
       expect(post.getBuilder().includes, equals(['user']));
 
-      post = ApiQuery.of(Post.init())..include(['user', 'category']);
+      post = ApiQuery.of(Post.new)..include(['user', 'category']);
       expect(post.getBuilder().includes, equals(['user', 'category']));
     });
 
     test('load() sets properly the builder', () {
-      var post = ApiQuery.of(Post.init())..load(['user']);
+      var post = ApiQuery.of(Post.new)..load(['user']);
       expect(post.getBuilder().includes, equals(['user']));
 
-      post = ApiQuery.of(Post.init())..load(['user', 'category']);
+      post = ApiQuery.of(Post.new)..load(['user', 'category']);
       expect(post.getBuilder().includes, equals(['user', 'category']));
     });
 
     test('append() sets properly the builder', () {
-      var post = ApiQuery.of(Post.init())..append(['likes']);
+      var post = ApiQuery.of(Post.new)..append(['likes']);
       expect(post.getBuilder().appends, equals(['likes']));
 
-      post = ApiQuery.of(Post.init())..append(['likes', 'visits']);
+      post = ApiQuery.of(Post.new)..append(['likes', 'visits']);
       expect(post.getBuilder().appends, equals(['likes', 'visits']));
     });
 
     test('orderBy() sets properly the builder', () {
-      var post = ApiQuery.of(Post.init())..orderBy(['created_at']);
+      var post = ApiQuery.of(Post.new)..orderBy(['created_at']);
       expect(post.getBuilder().sorts, equals(['created_at']));
 
-      post = ApiQuery.of(Post.init())..orderBy(['created_at', '-visits']);
+      post = ApiQuery.of(Post.new)..orderBy(['created_at', '-visits']);
       expect(post.getBuilder().sorts, equals(['created_at', '-visits']));
     });
 
     test('where() and whereNested() sets properly the builder', () {
-      var post = ApiQuery.of(Post.init())..where('id', 1);
+      var post = ApiQuery.of(Post.new)..where('id', 1);
       expect(post.getBuilder().filters, equals({'id': 1}));
 
-      post = ApiQuery.of(Post.init())
+      post = ApiQuery.of(Post.new)
         ..where('id', 1)
         ..where('title', 'Cool');
       expect(post.getBuilder().filters, equals({'id': 1, 'title': 'Cool'}));
 
-      post = ApiQuery.of(Post.init())
+      post = ApiQuery.of(Post.new)
         ..whereNested({
           'user': {'status': 'active'}
         });
@@ -175,7 +175,7 @@ void main() {
       );
       expect(post.getBuilder().query(), equals('?filter[user][status]=active'));
 
-      post = ApiQuery.of(Post.init())
+      post = ApiQuery.of(Post.new)
         ..whereNested({
           'schedule': {'start': '2020-11-27'}
         })
@@ -198,7 +198,7 @@ void main() {
         ),
       );
 
-      post = ApiQuery.of(Post.init())
+      post = ApiQuery.of(Post.new)
         ..whereNested({'id': 1, 'title': 'Cool'})
         ..when(
           true,
@@ -219,7 +219,7 @@ void main() {
 
     test('where() throws a exception when does´t not have values', () {
       expect(
-        () => ApiQuery.of(Post.init())..where('id', null),
+        () => ApiQuery.of(Post.new)..where('id', null),
         throwsA(
           (dynamic e) =>
               e is ArgumentError &&
@@ -231,7 +231,7 @@ void main() {
     test('where() throws a exception when second parameter is not primitive',
         () {
       expect(
-        () => ApiQuery.of(Post.init())..where('id', ['foo']),
+        () => ApiQuery.of(Post.new)..where('id', ['foo']),
         throwsA(
           (dynamic e) =>
               e is ArgumentError &&
@@ -241,7 +241,7 @@ void main() {
     });
 
     test('whereIn() and whereInNested sets properly the builder', () {
-      var post = ApiQuery.of(Post.init())
+      var post = ApiQuery.of(Post.new)
         ..whereIn('status', ['ACTIVE', 'ARCHIVED']);
       expect(
         post.getBuilder().filters,
@@ -250,7 +250,7 @@ void main() {
         }),
       );
 
-      post = ApiQuery.of(Post.init())
+      post = ApiQuery.of(Post.new)
         ..whereInNested({
           'user': {
             'status': ['active', 'inactive']
@@ -269,7 +269,7 @@ void main() {
         equals('?filter[user][status]=active,inactive'),
       );
 
-      post = ApiQuery.of(Post.init())
+      post = ApiQuery.of(Post.new)
         ..whereInNested({
           'schedule': {
             'start': ['2020-11-27', '2020-11-28']
@@ -300,7 +300,7 @@ void main() {
         ),
       );
 
-      post = ApiQuery.of(Post.init())
+      post = ApiQuery.of(Post.new)
         ..whereInNested({
           'status': ['ACTIVE', 'ARCHIVED']
         })
@@ -326,18 +326,18 @@ void main() {
     });
 
     test('page() sets properly the builder', () {
-      final post = ApiQuery.of(Post.init())..page(3);
+      final post = ApiQuery.of(Post.new)..page(3);
       expect(post.getBuilder().pageValue, equals(3));
     });
 
     test('limit() sets properly the builder', () {
-      final post = ApiQuery.of(Post.init())..limit(10);
+      final post = ApiQuery.of(Post.new)..limit(10);
       expect(post.getBuilder().limitValue, equals(10));
     });
 
     test('select() with no parameters', () {
       expect(
-        () => ApiQuery.of(Post.init())..select([]),
+        () => ApiQuery.of(Post.new)..select([]),
         throwsA(
           (dynamic e) =>
               e is ArgumentError &&
@@ -347,12 +347,12 @@ void main() {
     });
 
     test('select() for single entity', () {
-      final post = ApiQuery.of(Post.init())..select(['age', 'firstname']);
+      final post = ApiQuery.of(Post.new)..select(['age', 'firstname']);
       expect(post.getBuilder().fields['posts'], equals(['age', 'firstname']));
     });
 
     test('select() for related entities', () {
-      final post = ApiQuery.of(Post.init())
+      final post = ApiQuery.of(Post.new)
         ..selectFromRelations({
           'posts': ['title', 'content'],
           'user': ['age', 'firstname']
@@ -363,11 +363,11 @@ void main() {
     });
 
     test('params() sets properly the builder', () {
-      var post = ApiQuery.of(Post.init())..params({'doSomething': 'yes'});
+      var post = ApiQuery.of(Post.new)..params({'doSomething': 'yes'});
 
       expect(post.getBuilder().payload, equals({'doSomething': 'yes'}));
 
-      post = ApiQuery.of(Post.init())
+      post = ApiQuery.of(Post.new)
         ..params({
           'foo': 'bar',
           'baz': ['a', 'b']
@@ -385,20 +385,20 @@ void main() {
 
     test('when() sets properly the builder', () {
       var search = '';
-      var post = ApiQuery.of(Post.init())
+      var post = ApiQuery.of(Post.new)
         ..when(search, (query, value) => query..where('title', value));
 
       expect(post.getBuilder().filters, equals({}));
 
       search = 'foo';
-      post = ApiQuery.of(Post.init())
+      post = ApiQuery.of(Post.new)
         ..when(search, (query, value) => query..where('title', value));
 
       expect(post.getBuilder().filters, equals({'title': 'foo'}));
     });
 
     test('resets uri upon query gen when query is regen a second time', () {
-      final post = ApiQuery.of(Post.init())
+      final post = ApiQuery.of(Post.new)
         ..where('title', 'Cool')
         ..page(4);
       const query = '?filter[title]=Cool&page=4';

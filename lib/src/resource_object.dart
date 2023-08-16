@@ -20,9 +20,10 @@ class ResourceObject {
   /// Check if id is assigned
   bool get isNew => id == null;
 
-  /// Retrieve attribute and return to specific type
+  /// Retrieve attribute and return to specific type. Use dot notation in key
+  /// to access nested keys.
   T getAttribute<T>(String key) {
-    final rawAttribute = attributes[key];
+    final rawAttribute = mapGetter<T>(attributes, key);
 
     switch (T.toString()) {
       case 'bool':
@@ -54,7 +55,8 @@ class ResourceObject {
     return rawAttribute as T;
   }
 
-  /// Set attribute from key, value
+  /// Set attribute from key, value. Use dot notation in key
+  /// to access nested keys.
   void setAttribute<T>(String key, T value) {
     dynamic rawValue;
     switch (T) {
@@ -64,28 +66,57 @@ class ResourceObject {
         rawValue = value;
     }
 
-    attributes[key] = rawValue;
+    attributes = mapSetter(attributes, key, rawValue);
   }
 
-  /// Retrieve id of relationship name for has one
-  String? idFor(String relationshipName, {String idKey = 'id'}) =>
-      dataForHasOne(relationshipName)[idKey] as String;
+  /// Get value from a Map by path. Use dot notation in path to access nested
+  /// keys. If location path does´t exist, it will return null.
+  T? mapGetter<T>(dynamic map, String path) {
+    final keys = path.split('.');
+    final key = keys[0];
 
-  /// Retrieve List of ids from relationship name
-  Iterable<String> idsFor(String relationshipName, {String idKey = 'id'}) =>
-      attributes.containsKey(relationshipName)
-          ? dataForHasMany(relationshipName)
-              .map((record) => (record as Map<String, String>)[idKey]!)
-          : <String>[];
+    if (map is! Map) {
+      return null;
+    }
 
-  /// Retrieve data of relationship for has one
-  Map<String, dynamic> dataForHasOne(String relationshipName) =>
-      attributes.containsKey(relationshipName)
-          ? (attributes[relationshipName] as Map<String, dynamic>? ??
-              <String, dynamic>{})
-          : <String, dynamic>{};
+    if (!map.containsKey(key)) {
+      return null;
+    }
 
-  /// Retrieve data of relationship for has Many
-  Iterable<dynamic> dataForHasMany(String relationshipName) =>
-      attributes[relationshipName] as Iterable<dynamic>? ?? [];
+    if (keys.length == 1) {
+      return map[key] as T;
+    }
+
+    return mapGetter(map[keys.removeAt(0)], keys.join('.'));
+  }
+
+  /// Sets value to the Map by path. If location of path does´t exist,
+  /// it will created.
+  Map<String, dynamic> mapSetter<T>(
+    Map<String, dynamic>? map,
+    String path,
+    T value,
+  ) {
+    final keys = path.split('.');
+    final key = keys[0];
+    final target = map ?? {};
+
+    if (keys.length == 1) {
+      return Map<String, dynamic>.from({
+        ...target,
+        key: value,
+      });
+    }
+
+    return Map<String, dynamic>.from({
+      ...target,
+      key: mapSetter(
+        target[keys.removeAt(0)] is Map<String, dynamic>
+            ? target[keys.removeAt(0)] as Map<String, dynamic>
+            : {},
+        keys.join('.'),
+        value,
+      ),
+    });
+  }
 }

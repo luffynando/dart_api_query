@@ -36,40 +36,79 @@ class Schema {
   /// Retrieve id of schema
   dynamic get id => resourceObject.id;
 
-  /// Helper function to get attribute
+  /// Helper function to get attribute. Use dot notation in key to access
+  /// nested keys.
   T getAttribute<T>(String key) => resourceObject.getAttribute<T>(key);
 
-  /// Helper function to set attribute
+  /// Helper function to set attribute. Use dot notation in key to access
+  /// nested keys.
   void setAttribute<T>(String key, T value) =>
       resourceObject.setAttribute<T>(key, value);
 
+  /// Load relation hasOne for Schema specified. Throws a StateError if
+  /// relationshipPath not exists or is null.
+  T hasOne<T>(
+    String relationshipPath,
+    T Function(ResourceObject object) createInstance,
+  ) {
+    final instanceModel = hasOneOrNull(relationshipPath, createInstance);
+    if (instanceModel == null) {
+      throw StateError('Relation not found.');
+    }
+
+    return instanceModel;
+  }
+
+  /// Load relation hasOne for Schema specified. Or returns null if
+  /// relationshipPath not exists or is null.
+  T? hasOneOrNull<T>(
+    String relationshipPath,
+    T Function(ResourceObject object) createInstance,
+  ) {
+    final data = getAttribute<Map<String, dynamic>?>(relationshipPath);
+    return data != null ? createInstance(deserializeOne(data)) : null;
+  }
+
+  /// Load relation hasMap for Schema specified. Throws a StateError if
+  /// relationshipPath not exists or is null.
+  Iterable<T> hasMany<T>(
+    String relationshipPath,
+    T Function(ResourceObject object) createInstance,
+  ) {
+    final iterableModels = hasManyOrNull(relationshipPath, createInstance);
+    if (iterableModels == null) {
+      throw StateError('Relation not found.');
+    }
+
+    return iterableModels;
+  }
+
+  /// Load relation hasMap for Schema specified. Or returns null if
+  /// relationshipPath not exists or is null.
+  Iterable<T>? hasManyOrNull<T>(
+    String relationshipPath,
+    T Function(ResourceObject object) createInstance,
+  ) {
+    final data = getAttribute<dynamic>(relationshipPath);
+
+    try {
+      return deserializeMany(data)
+          .map((resourceObject) => createInstance(resourceObject));
+    } catch (e) {
+      return null;
+    }
+  }
+
   /// Check if id is assigned
   bool get isNew => resourceObject.isNew;
-
-  /// Retrieve id of relationship name for has one
-  String? idFor(String relationshipName, {String idKey = 'id'}) =>
-      resourceObject.idFor(relationshipName, idKey: idKey);
-
-  /// Retrieve data of relationship for has one
-  Map<String, dynamic> dataForHasOne(String relationshipName) =>
-      resourceObject.dataForHasOne(relationshipName);
-
-  /// Retrieve data of relationship for has Many
-  Iterable<dynamic>? dataForHasMany(String relationshipName) =>
-      resourceObject.dataForHasMany(relationshipName);
-
-  /// Retrieve List of ids from relationship name
-  Iterable<String> idsFor(String relationshipName, {String idKey = 'id'}) =>
-      resourceObject.idsFor(relationshipName, idKey: idKey);
 
   /// From data to Resource Object
   ResourceObject deserializeOne(Map<String, dynamic> data) =>
       _serializer.deserialize(data);
 
   /// From data to Resource Collection
-  ResourceCollection deserializeMany(dynamic data) {
-    return _serializer.deserializeMany(data);
-  }
+  ResourceCollection deserializeMany(dynamic data) =>
+      _serializer.deserializeMany(data);
 
   /// Override baseURL for only model. Not for all.
   String? baseURL() {

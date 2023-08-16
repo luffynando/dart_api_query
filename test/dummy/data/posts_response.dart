@@ -1,4 +1,4 @@
-const postsResponse = [
+Iterable<Map<String, dynamic>> postsResponse = [
   {
     'id': 1,
     'someId': 'du761-8bc98',
