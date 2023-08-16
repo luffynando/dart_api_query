@@ -13,10 +13,15 @@ import '../dummy/models/user.dart';
 
 void main() {
   group('Schema methods', () {
-    final dio = Dio(BaseOptions());
-    final dioAdapter = DioAdapter(dio: dio);
+    late Dio dio;
+    late DioAdapter dioAdapter;
 
     setUp(() {
+      dio = Dio(BaseOptions());
+      dioAdapter = DioAdapter(
+        dio: dio,
+      );
+
       ApiQuery.http = dio;
       ApiQuery.baseURL = 'http://localhost';
     });
@@ -139,10 +144,16 @@ void main() {
     test(
       'find() return a obj as instance of such Schema with empty relationships',
       () async {
-        final postResponseWithOutRelations = postResponse;
-        postResponseWithOutRelations['user'] = null;
-        (postResponseWithOutRelations['relationships']
-            as Map<String, dynamic>)['tags'] = <Map<String, String>>[];
+        final postResponseWithOutRelations = <String, dynamic>{}
+          ..addAll(postResponse)
+          ..addAll({
+            'user': null
+          })
+          ..addAll({
+            'relationships': {
+              'tags': <Map<String, String>>[]
+            }
+          });
 
         dioAdapter.onGet(
           'http://localhost/posts/1',
@@ -167,8 +178,11 @@ void main() {
     test(
       'find() returns instance of such Schema with some empty relationship',
       () async {
-        final postResponseWithSomeRelations = postResponse;
-        postResponseWithSomeRelations['user'] = null;
+        final postResponseWithSomeRelations = <String, dynamic>{}
+          ..addAll(postResponse)
+          ..addAll({
+            'user': null
+          });
 
         dioAdapter.onGet(
           'http://localhost/posts/1',
@@ -190,6 +204,46 @@ void main() {
           expect(tag, isA<Tag>());
         }
         expect(post.relationships['tags']!.first.name, equals('super'));
+      },
+    );
+
+    test(
+      'find() method throws StateError when no item have found',
+      () async {
+        dioAdapter.onGet(
+          'http://localhost/posts/1',
+          (server) => server.reply(
+            200,
+            null,
+            delay: const Duration(milliseconds: 500),
+          ),
+        );
+
+        await expectLater(
+          () => ApiQuery.of(Post.new).find(1),
+          throwsA(
+            (dynamic e) =>
+                e is StateError &&
+                e.message.contains('No response data or null.'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'findOrNull() method returns null when no item have found',
+      () async {
+        dioAdapter.onGet(
+          'http://localhost/posts/1',
+          (server) => server.reply(
+            200,
+            null,
+            delay: const Duration(milliseconds: 500),
+          ),
+        );
+
+        final post = await ApiQuery.of(Post.new).findOrNull(1);
+        expect(post, equals(null));
       },
     );
   });
