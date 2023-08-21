@@ -493,8 +493,11 @@ void main() {
             ),
           );
 
+        expect(post.user, isNull);
+
         post = await ApiQuery.of(Post.create, current: post).save();
         expect(post.text, equals('Cool!'));
+        expect(post.user, isNotNull);
       },
     );
   });
