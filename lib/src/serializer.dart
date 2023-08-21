@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dart_api_query/src/exceptions.dart';
 import 'package:dart_api_query/src/resource_collection.dart';
 import 'package:dart_api_query/src/resource_object.dart';
@@ -11,7 +13,7 @@ class Serializer {
       throw DeserializationException();
     }
 
-    return ResourceObject(data['id'], data);
+    return ResourceObject(data);
   }
 
   /// From responseData of dio to Resource Collection
@@ -22,14 +24,26 @@ class Serializer {
                     responseData['data'] is Iterable
                 ? responseData['data'] as Iterable
                 : <dynamic>[]))
-        .map((item) {
-      if (item is! Map<String, dynamic>) {
-        throw DeserializationException();
-      }
+        .map(
+      (item) {
+        if (item is! Map<String, dynamic>) {
+          throw DeserializationException();
+        }
 
-      return ResourceObject(item['id'], item);
-    });
+        return ResourceObject(item);
+      },
+    );
 
     return ResourceCollection(collection);
+  }
+
+  /// Serialize ResourceObject attributes to json string.
+  String serialize(ResourceObject document) {
+    try {
+      final jsonMap = <String, dynamic>{}..addAll(document.attributes);
+      return jsonEncode(jsonMap);
+    } catch (e) {
+      throw SerializationException();
+    }
   }
 }

@@ -3,9 +3,9 @@ import 'package:dart_api_query/src/schema.dart';
 import 'package:dio/dio.dart';
 
 final class EmptyBaseModel extends Schema {
-  EmptyBaseModel(super.resourceObject);
+  EmptyBaseModel([super.attributes]);
 
-  EmptyBaseModel.init() : super.init();
+  EmptyBaseModel.create(super.resourceObject): super.create();
 
   static void withBaseURL() {
     baseUrlCustom = 'foo';

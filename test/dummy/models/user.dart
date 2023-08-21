@@ -1,9 +1,9 @@
 import 'package:dart_api_query/src/schema.dart';
 
 final class User extends Schema {
-  User(super.resourceObject);
+  User([super.attributes]);
 
-  User.init() : super.init();
+  User.create(super.objectResource) : super.create();
 
   String get firstname => getAttribute<String>('firstname');
 

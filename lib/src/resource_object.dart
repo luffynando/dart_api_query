@@ -2,23 +2,14 @@
 /// Schema model
 class ResourceObject {
   /// Default constructor
-  ResourceObject(this.id, this.attributes);
-
-  /// Create a resource object with specific attributes
-  ResourceObject.create(this.attributes);
+  ResourceObject(this.attributes);
 
   /// Create a resource object from another object
   ResourceObject.from(ResourceObject other)
-      : this(other.id, Map<String, dynamic>.from(other.attributes));
-
-  /// Id of current resource object
-  dynamic id;
+      : this(Map<String, dynamic>.from(other.attributes));
 
   /// Attributes of resource object
   Map<String, dynamic> attributes;
-
-  /// Check if id is assigned
-  bool get isNew => id == null;
 
   /// Retrieve attribute and return to specific type. Use dot notation in key
   /// to access nested keys.

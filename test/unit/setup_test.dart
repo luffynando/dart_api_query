@@ -11,7 +11,7 @@ void main() {
       EmptyBaseModel.withBaseURL();
 
       expect(
-        () => ApiQuery.of(EmptyBaseModel.new),
+        () => ApiQuery.of(EmptyBaseModel.create),
         throwsA(
           (dynamic e) =>
               e is ArgumentError &&
@@ -25,7 +25,7 @@ void main() {
       EmptyBaseModel.withHttp();
 
       expect(
-        () => ApiQuery.of(EmptyBaseModel.new),
+        () => ApiQuery.of(EmptyBaseModel.create),
         throwsA(
           (dynamic e) =>
               e is ArgumentError &&
@@ -39,7 +39,7 @@ void main() {
     });
 
     test('the resource() method pluralizes the class name', () {
-      final post = Post.init();
+      final post = Post();
       expect(post.resource(), equals('posts'));
     });
   });

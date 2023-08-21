@@ -7,8 +7,8 @@ import 'package:dio/dio.dart';
 /// Adapter for connect with api
 final class ApiQuery<T extends Schema> {
   /// Retrieve singleton
-  ApiQuery.of(this._createInstance, {Options? options})
-      : _schema = _createInstance(ResourceObject.create({})),
+  ApiQuery.of(this._createInstance, {Options? options, T? current})
+      : _schema = current ?? _createInstance(ResourceObject({})),
         _options = options,
         _serializer = Serializer() {
     if (ApiQuery.baseURL == null && _schema.baseURL() == null) {
@@ -311,5 +311,65 @@ final class ApiQuery<T extends Schema> {
     return responseData != null
         ? _serializer.deserializeMany(responseData).map(_createInstance)
         : null;
+  }
+
+  /// Delete the model from the database.
+  Future<Y?> delete<Y>() async {
+    if (_customResource != null) {
+      throw ArgumentError(
+        'The delete() method cannot be used with the custom() method.',
+      );
+    }
+
+    if (_schema.isNew) {
+      throw ArgumentError('This schema has a empty ID.');
+    }
+
+    return ApiQuery.http!.delete<Y>(endpoint()).then((value) => value.data);
+  }
+
+  /// Save or update a model in the database, then return the instance.
+  Future<T> save() async {
+    if (_customResource != null) {
+      throw ArgumentError(
+        'The save() method cannot be used with the custom() method.',
+      );
+    }
+
+    return _schema.isNew ? _create() : _update();
+  }
+
+  Future<T> _create() async {
+    return ApiQuery.http!
+        .post<Map<String, dynamic>>(
+      endpoint(),
+      data: _serializer.serialize(_schema.resourceObject),
+    )
+        .then(
+      (response) {
+        if (response.data == null || response.data == <String, dynamic>{}) {
+          throw StateError('No data result.');
+        }
+
+        return _createInstance(_serializer.deserialize(response.data!));
+      },
+    );
+  }
+
+  Future<T> _update() async {
+    return ApiQuery.http!
+        .put<Map<String, dynamic>>(
+      endpoint(),
+      data: _serializer.serialize(_schema.resourceObject),
+    )
+        .then(
+      (response) {
+        if (response.data == null || response.data == <String, dynamic>{}) {
+          throw StateError('No data result.');
+        }
+
+        return _createInstance(_serializer.deserialize(response.data!));
+      },
+    );
   }
 }

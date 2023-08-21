@@ -2,9 +2,9 @@ import 'package:dart_api_query/src/query_parameters.dart';
 import 'package:dart_api_query/src/schema.dart';
 
 final class ModelWithParamNames extends Schema {
-  ModelWithParamNames(super.resourceObject);
+  ModelWithParamNames([super.attributes]);
 
-  ModelWithParamNames.init() : super.init();
+  ModelWithParamNames.create(super.resourceObject) : super.create();
 
   @override
   QueryParameters parameterNames() {

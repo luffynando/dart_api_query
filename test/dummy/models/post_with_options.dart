@@ -2,9 +2,9 @@ import 'package:dart_api_query/src/qs/stringify_options.dart';
 import 'package:dart_api_query/src/schema.dart';
 
 final class PostWithOptions extends Schema {
-  PostWithOptions(super.resourceObject);
+  PostWithOptions([super.attributes]);
 
-  PostWithOptions.init() : super.init();
+  PostWithOptions.create(super.resourceObject) : super.create();
 
   @override
   StringifyOptions stringifyOptions() {

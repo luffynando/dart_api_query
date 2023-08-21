@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dart_api_query/src/api_query.dart';
 import 'package:dart_api_query/src/resource_object.dart';
 import 'package:dio/dio.dart';
@@ -27,6 +29,7 @@ void main() {
 
       ApiQuery.http = dio;
       ApiQuery.baseURL = 'http://localhost';
+      Post.customKey = 'id';
     });
 
     test(
@@ -41,7 +44,7 @@ void main() {
           ),
         );
 
-        final post = await ApiQuery.of(Post.new).first();
+        final post = await ApiQuery.of(Post.create).first();
         expect(post.resourceObject, isA<ResourceObject>());
         expect(post.attributes, equals(postsResponse.first));
         expect(post, isA<Post>());
@@ -68,7 +71,7 @@ void main() {
         );
 
         await expectLater(
-          () => ApiQuery.of(Post.new).first(),
+          () => ApiQuery.of(Post.create).first(),
           throwsA(
             (dynamic e) => e is StateError && e.message.contains('No element'),
           ),
@@ -88,7 +91,7 @@ void main() {
           ),
         );
 
-        final post = await ApiQuery.of(Post.new).firstOrNull();
+        final post = await ApiQuery.of(Post.create).firstOrNull();
         expect(post, isNull);
       },
     );
@@ -103,7 +106,7 @@ void main() {
         ),
       );
 
-      final post = await ApiQuery.of(Post.new).find(1);
+      final post = await ApiQuery.of(Post.create).find(1);
       expect(post.attributes, equals(postResponse));
       expect(post.resourceObject, isA<ResourceObject>());
 
@@ -126,7 +129,7 @@ void main() {
         ),
       );
 
-      final post = await ApiQuery.of(Post.new).find(1);
+      final post = await ApiQuery.of(Post.create).find(1);
       expect(post.attributes, equals(postEmbedResponse['data']));
       expect(post.resourceObject, isA<ResourceObject>());
       expect(post, isA<Post>());
@@ -142,7 +145,9 @@ void main() {
       'find() return a obj as instance of such Schema with empty relationships',
       () async {
         final postResponseWithOutRelations = <String, dynamic>{}
-          ..addAll(postResponse)
+          ..addAll(
+            postResponse,
+          )
           ..addAll({'user': null})
           ..addAll({
             'relationships': {'tags': <Map<String, String>>[]}
@@ -157,7 +162,7 @@ void main() {
           ),
         );
 
-        final post = await ApiQuery.of(Post.new).find(1);
+        final post = await ApiQuery.of(Post.create).find(1);
         expect(
           post.attributes,
           equals(postResponseWithOutRelations),
@@ -172,7 +177,9 @@ void main() {
       'find() returns instance of such Schema with some empty relationship',
       () async {
         final postResponseWithSomeRelations = <String, dynamic>{}
-          ..addAll(postResponse)
+          ..addAll(
+            postResponse,
+          )
           ..addAll({'user': null});
 
         dioAdapter.onGet(
@@ -184,7 +191,7 @@ void main() {
           ),
         );
 
-        final post = await ApiQuery.of(Post.new).find(1);
+        final post = await ApiQuery.of(Post.create).find(1);
         expect(
           post.attributes,
           equals(postResponseWithSomeRelations),
@@ -209,7 +216,7 @@ void main() {
         );
 
         await expectLater(
-          () => ApiQuery.of(Post.new).find(1),
+          () => ApiQuery.of(Post.create).find(1),
           throwsA(
             (dynamic e) =>
                 e is StateError &&
@@ -231,7 +238,7 @@ void main() {
           ),
         );
 
-        final post = await ApiQuery.of(Post.new).findOrNull(1);
+        final post = await ApiQuery.of(Post.create).findOrNull(1);
         expect(post, isNull);
       },
     );
@@ -248,7 +255,7 @@ void main() {
           ),
         );
 
-        final posts = await ApiQuery.of(Post.new).get();
+        final posts = await ApiQuery.of(Post.create).get();
         expect(posts, isNotEmpty);
 
         for (final post in posts) {
@@ -269,7 +276,7 @@ void main() {
         ),
       );
 
-      final post = Post(ResourceObject(1, {}));
+      final post = Post({'id': 1});
       final comments = await post.comments().get();
 
       expect(comments, isNotEmpty);
@@ -281,6 +288,8 @@ void main() {
     });
 
     test('get() hits right resource (nested object, custom PK)', () async {
+      Post.customKey = 'someId';
+
       dioAdapter.onGet(
         'http://localhost/posts/po9996-9dd18/comments',
         (server) => server.reply(
@@ -289,7 +298,7 @@ void main() {
           delay: const Duration(milliseconds: 500),
         ),
       );
-      final post = Post(ResourceObject('po9996-9dd18', {'id': 1}));
+      final post = Post({'id': 1, 'someId': 'po9996-9dd18'});
       final comments = await post.comments().get();
 
       expect(comments, isNotEmpty);
@@ -310,7 +319,7 @@ void main() {
         ),
       );
 
-      final posts = await ApiQuery.of(Post.new).get();
+      final posts = await ApiQuery.of(Post.create).get();
       expect(posts, isNotEmpty);
       expect(posts.first.attributes, equals(postEmbedResponse['data']));
     });
@@ -325,7 +334,7 @@ void main() {
         ),
       );
 
-      final posts = await ApiQuery.of(Post.new).get();
+      final posts = await ApiQuery.of(Post.create).get();
       expect(posts, isNotEmpty);
       expect(posts.first.attributes, equals(postEmbedResponse['data']));
     });
@@ -342,7 +351,7 @@ void main() {
           ),
         );
 
-        final post = Post(ResourceObject(1, {}));
+        final post = Post({'id': 1});
         final comments = await post.comments().get();
 
         expect(comments, isNotEmpty);
@@ -364,13 +373,129 @@ void main() {
         ),
       );
 
-      final postsAll = await ApiQuery.of(Post.new).all();
-      final postsGet = await ApiQuery.of(Post.new).get();
+      final postsAll = await ApiQuery.of(Post.create).all();
+      final postsGet = await ApiQuery.of(Post.create).get();
 
       expect(
         postsAll.toList().map((e) => e.attributes),
         equals(postsGet.toList().map((e) => e.attributes)),
       );
     });
+
+    test(
+      'save() method makes a POST request when ID of object does not exists',
+      () async {
+        final postSaveResponse = {
+          'id': 1,
+          'text': 'Cool!',
+          'user': {'firstname': 'John', 'lastname': 'Doe', 'age': 25},
+          'relationships': {
+            'tags': [
+              {'name': 'super'},
+              {'name': 'awesome'}
+            ]
+          }
+        };
+
+        dioAdapter.onPost(
+          'http://localhost/posts',
+          (server) => server.reply(
+            200,
+            postSaveResponse,
+            delay: const Duration(milliseconds: 500),
+          ),
+          data: jsonEncode({'text': 'Cool!'}),
+        );
+
+        var post = Post()..text = 'Cool!';
+        post = await ApiQuery.of(Post.create, current: post).save();
+
+        expect(post.attributes, equals(postSaveResponse));
+        expect(post, isA<Post>());
+        expect(post.user, isA<User>());
+        expect(post.relationships['tags'], everyElement(isA<Tag>()));
+      },
+    );
+
+    test(
+      'save() method makes a PUT request when ID of object exists',
+      () async {
+        dioAdapter
+          ..onGet(
+            'http://localhost/posts/1',
+            (server) => server.reply(
+              200,
+              postResponse,
+              delay: const Duration(milliseconds: 500),
+            ),
+          )
+          ..onPut(
+            'http://localhost/posts/1',
+            (server) => server.reply(
+              200,
+              {
+                'id': 1,
+                'text': 'Cool!',
+                'user': {'firstname': 'John', 'lastname': 'Doe', 'age': 25},
+                'relationships': {
+                  'tags': [
+                    {'name': 'super'},
+                    {'name': 'awesome'}
+                  ]
+                }
+              },
+              delay: const Duration(milliseconds: 500),
+            ),
+            data: jsonEncode(
+              {}
+                ..addAll(postResponse)
+                ..addAll({'text': 'Cool!'}),
+            ),
+          );
+
+        var post = await ApiQuery.of(Post.create).find(1);
+        expect(post.text, equals('Lorem Ipsum Dolor'));
+
+        post.text = 'Cool!';
+        post = await ApiQuery.of(Post.create, current: post).save();
+        expect(post.text, equals('Cool!'));
+      },
+    );
+
+    test(
+      'save() method makes a PUT request when ID of object exists (custom PK)',
+      () async {
+        Post.customKey = 'someId';
+
+        var post = Post({'id': 1, 'someId': 'xs911-8cf12', 'text': 'Cool!'});
+
+        dioAdapter.onPut(
+            'http://localhost/posts/${post.someId}',
+                (server) => server.reply(
+              200,
+              {
+                'id': 1,
+                'text': 'Cool!',
+                'someId': 'xs911-8cf12',
+                'user': {'firstname': 'John', 'lastname': 'Doe', 'age': 25},
+                'relationships': {
+                  'tags': [
+                    {'name': 'super'},
+                    {'name': 'awesome'}
+                  ]
+                }
+              },
+              delay: const Duration(milliseconds: 500),
+            ),
+            data: jsonEncode(
+              {}
+                ..addAll(post.attributes),
+            ),
+          );
+
+        post = await ApiQuery.of(Post.create, current: post).save();
+        expect(post.text, equals('Cool!'));
+      },
+    );
   });
 }

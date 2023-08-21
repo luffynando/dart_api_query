@@ -10,21 +10,18 @@ import 'package:dart_api_query/src/serializer.dart';
 /// errors.
 class Schema {
   /// Default constructor
-  Schema(this.resourceObject);
+  Schema([Map<String, dynamic>? attributes])
+      : resourceObject = ResourceObject(attributes ?? <String, dynamic>{});
 
   /// Create schema with attributes
-  Schema.create({Map<String, dynamic>? attributes})
-      : resourceObject =
-            ResourceObject.create(attributes ?? <String, dynamic>{});
-
-  /// Create empty schema model
-  Schema.init() : this.create();
+  Schema.create(this.resourceObject);
 
   /// Create from another schema model
-  Schema.from(Schema other) : this(ResourceObject.from(other.resourceObject));
+  Schema.from(Schema other)
+      : this.create(ResourceObject.from(other.resourceObject));
 
   /// Create from other mode shallow copy
-  Schema.shallowCopy(Schema other) : this(other.resourceObject);
+  Schema.shallowCopy(Schema other) : this.create(other.resourceObject);
 
   final Serializer _serializer = Serializer();
 
@@ -34,8 +31,13 @@ class Schema {
   /// Retrieve raw attributes of model schema
   Map<String, dynamic> get attributes => resourceObject.attributes;
 
+  /// Retrieve key of primaryKey
+  String primaryKey() {
+    return 'id';
+  }
+
   /// Retrieve id of schema
-  dynamic get id => resourceObject.id;
+  dynamic get id => resourceObject.getAttribute<dynamic>(primaryKey());
 
   /// Helper function to get attribute. Use dot notation in key to access
   /// nested keys.
@@ -104,14 +106,15 @@ class Schema {
   ApiQuery<T> load<T extends Schema>(
     T Function(ResourceObject resourceObject) createInstance,
   ) {
-    final instance = createInstance(ResourceObject.create({}));
-    final url = '${baseURL() ?? ApiQuery.baseURL}/${resource()}/$id/${instance.resource()}';
+    final instance = createInstance(ResourceObject({}));
+    final url =
+        '${baseURL() ?? ApiQuery.baseURL}/${resource()}/$id/${instance.resource()}';
 
     return ApiQuery.of(createInstance)..from(url);
   }
 
   /// Check if id is assigned
-  bool get isNew => resourceObject.isNew;
+  bool get isNew => id == null;
 
   /// From data to Resource Object
   ResourceObject deserializeOne(Map<String, dynamic> data) =>
