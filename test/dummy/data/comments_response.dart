@@ -5,8 +5,8 @@ Iterable<Map<String, dynamic>> commentsResponse = [
     'someId': 'ma018-9ha12',
     'text': 'Hello',
     'replies': [
-      {'id': 3, 'comment_id': 1, 'someId': 'ma020-9ha15', 'text': 'Hello'}
-    ]
+      {'id': 3, 'comment_id': 1, 'someId': 'ma020-9ha15', 'text': 'Hello'},
+    ],
   },
   {
     'id': 2,
@@ -15,7 +15,7 @@ Iterable<Map<String, dynamic>> commentsResponse = [
     'text': 'How are you?',
     'replies': [
       {'id': 4, 'comment_id': 2, 'someId': 'mw023-9ha18', 'text': 'Hello'},
-      {'id': 5, 'comment_id': 2, 'someId': 'mw035-0ha22', 'text': 'Hello'}
-    ]
+      {'id': 5, 'comment_id': 2, 'someId': 'mw035-0ha22', 'text': 'Hello'},
+    ],
   }
 ];

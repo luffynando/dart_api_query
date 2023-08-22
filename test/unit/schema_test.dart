@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:dart_api_query/src/api_query.dart';
 import 'package:dart_api_query/src/resource_object.dart';
 import 'package:dio/dio.dart';
@@ -150,7 +149,7 @@ void main() {
           )
           ..addAll({'user': null})
           ..addAll({
-            'relationships': {'tags': <Map<String, String>>[]}
+            'relationships': {'tags': <Map<String, String>>[]},
           });
 
         dioAdapter.onGet(
@@ -392,9 +391,9 @@ void main() {
           'relationships': {
             'tags': [
               {'name': 'super'},
-              {'name': 'awesome'}
-            ]
-          }
+              {'name': 'awesome'},
+            ],
+          },
         };
 
         dioAdapter.onPost(
@@ -440,9 +439,9 @@ void main() {
                 'relationships': {
                   'tags': [
                     {'name': 'super'},
-                    {'name': 'awesome'}
-                  ]
-                }
+                    {'name': 'awesome'},
+                  ],
+                },
               },
               delay: const Duration(milliseconds: 500),
             ),
@@ -470,34 +469,66 @@ void main() {
         var post = Post({'id': 1, 'someId': 'xs911-8cf12', 'text': 'Cool!'});
 
         dioAdapter.onPut(
-            'http://localhost/posts/${post.someId}',
-                (server) => server.reply(
-              200,
-              {
-                'id': 1,
-                'text': 'Cool!',
-                'someId': 'xs911-8cf12',
-                'user': {'firstname': 'John', 'lastname': 'Doe', 'age': 25},
-                'relationships': {
-                  'tags': [
-                    {'name': 'super'},
-                    {'name': 'awesome'}
-                  ]
-                }
+          'http://localhost/posts/${post.someId}',
+          (server) => server.reply(
+            200,
+            {
+              'id': 1,
+              'text': 'Cool!',
+              'someId': 'xs911-8cf12',
+              'user': {'firstname': 'John', 'lastname': 'Doe', 'age': 25},
+              'relationships': {
+                'tags': [
+                  {'name': 'super'},
+                  {'name': 'awesome'},
+                ],
               },
-              delay: const Duration(milliseconds: 500),
-            ),
-            data: jsonEncode(
-              {}
-                ..addAll(post.attributes),
-            ),
-          );
+            },
+            delay: const Duration(milliseconds: 500),
+          ),
+          data: jsonEncode(
+            {}..addAll(post.attributes),
+          ),
+        );
 
         expect(post.user, isNull);
 
         post = await ApiQuery.of(Post.create, current: post).save();
         expect(post.text, equals('Cool!'));
         expect(post.user, isNotNull);
+      },
+    );
+
+    test(
+      'save() method makes a PUT req when ID of object exists (nested object)',
+      () async {
+        dioAdapter
+          ..onGet(
+            'http://localhost/posts/1/comments',
+            (server) => server.reply(200, commentsResponse),
+          )
+          ..onPut(
+            'http://localhost/posts/1/comments/1',
+            (server) => server.reply(
+              200,
+              <String, dynamic>{}
+                ..addAll(commentsResponse.first)
+                ..addAll({'text': 'Owh!'}),
+            ),
+            data: jsonEncode(
+              {}
+                ..addAll(commentsResponse.first)
+                ..addAll({'text': 'Owh!'}),
+            ),
+          );
+
+        final post = Post({'id': 1});
+        var comment = await post.comments().first();
+        expect(comment.text, equals('Hello'));
+
+        comment.text = 'Owh!';
+        comment = await post.comments(current: comment).save();
+        expect(comment.text, 'Owh!');
       },
     );
   });

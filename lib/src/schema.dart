@@ -104,13 +104,14 @@ class Schema {
 
   /// Lazy load relationships from model
   ApiQuery<T> load<T extends Schema>(
-    T Function(ResourceObject resourceObject) createInstance,
-  ) {
+    T Function(ResourceObject resourceObject) createInstance, {
+    T? current,
+  }) {
     final instance = createInstance(ResourceObject({}));
     final url =
         '${baseURL() ?? ApiQuery.baseURL}/${resource()}/$id/${instance.resource()}';
 
-    return ApiQuery.of(createInstance)..from(url);
+    return ApiQuery.of(createInstance, current: current)..from(url);
   }
 
   /// Check if id is assigned

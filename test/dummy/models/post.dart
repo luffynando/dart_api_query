@@ -25,8 +25,8 @@ final class Post extends Schema {
 
   User? get user => hasOneOrNull('user', User.create);
 
-  ApiQuery<Comment> comments() {
-    return load(Comment.create);
+  ApiQuery<Comment> comments({Comment? current}) {
+    return load(Comment.create, current: current);
   }
 
   Map<String, Iterable<Tag>> get relationships {
