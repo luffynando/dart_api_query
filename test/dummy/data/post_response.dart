@@ -6,7 +6,7 @@ Map<String, dynamic> postResponse = {
   'relationships': {
     'tags': [
       {'name': 'super'},
-      {'name': 'awesome'}
-    ]
-  }
+      {'name': 'awesome'},
+    ],
+  },
 };

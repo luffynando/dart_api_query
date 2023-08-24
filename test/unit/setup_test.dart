@@ -32,7 +32,7 @@ void main() {
               e.message ==
                   [
                     'You must assign ApiQuery.baseURL property',
-                    ' or model baseURL() method.'
+                    ' or model baseURL() method.',
                   ].join(),
         ),
       );

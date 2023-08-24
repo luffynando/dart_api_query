@@ -125,7 +125,7 @@ List<String> _stringify({
         {
           'value': countAll != countNulls
               ? obj.map((element) => element ?? '').toList().join(',')
-              : null
+              : null,
         }
       ];
     } else {
@@ -213,7 +213,7 @@ String stringifyUtility(
 
   Map<dynamic, dynamic> obj;
   if (object is List) {
-    obj = {for (var e in object) object.indexOf(e).toString(): e};
+    obj = {for (final e in object) object.indexOf(e).toString(): e};
   } else {
     obj = object as Map<dynamic, dynamic>;
   }

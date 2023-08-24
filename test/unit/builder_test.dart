@@ -19,7 +19,7 @@ void main() {
         ..append(['likes'])
         ..selectFromRelations({
           'posts': ['title', 'content'],
-          'user': ['age', 'firstname']
+          'user': ['age', 'firstname'],
         })
         ..where('title', 'Cool')
         ..where('status', 'ACTIVE')
@@ -39,7 +39,7 @@ void main() {
         '&page=3',
         '&limit=10',
         '&doSomething=yes',
-        '&process=no'
+        '&process=no',
       ].join();
 
       expect(post.getBuilder().query(), equals(query));
@@ -51,7 +51,7 @@ void main() {
         ..append(['likes'])
         ..selectFromRelations({
           'posts': ['title', 'content'],
-          'user': ['age', 'firstname']
+          'user': ['age', 'firstname'],
         })
         ..where('title', 'Cool')
         ..where('status', 'ACTIVE')
@@ -68,7 +68,7 @@ void main() {
         '&filter_custom[status]=ACTIVE',
         '&sort_custom=created_at',
         '&page_custom=3',
-        '&limit_custom=10'
+        '&limit_custom=10',
       ].join();
 
       expect(model.getBuilder().query(), equals(query));
@@ -84,14 +84,14 @@ void main() {
           [
             '?include=user',
             '&filter[status][0]=published',
-            '&filter[status][1]=archived'
+            '&filter[status][1]=archived',
           ].join(),
         ),
       );
       expect(
         post.getBuilder().filters,
         equals({
-          'status': ['published', 'archived']
+          'status': ['published', 'archived'],
         }),
       );
 
@@ -99,8 +99,8 @@ void main() {
         ..include(['user'])
         ..whereInNested({
           'user': {
-            'status': ['active', 'inactive']
-          }
+            'status': ['active', 'inactive'],
+          },
         });
       expect(
         post.getBuilder().query(),
@@ -116,8 +116,8 @@ void main() {
         post.getBuilder().filters,
         equals({
           'user': {
-            'status': ['active', 'inactive']
-          }
+            'status': ['active', 'inactive'],
+          },
         }),
       );
     });
@@ -165,27 +165,27 @@ void main() {
 
       post = ApiQuery.of(Post.create)
         ..whereNested({
-          'user': {'status': 'active'}
+          'user': {'status': 'active'},
         });
       expect(
         post.getBuilder().filters,
         equals({
-          'user': {'status': 'active'}
+          'user': {'status': 'active'},
         }),
       );
       expect(post.getBuilder().query(), equals('?filter[user][status]=active'));
 
       post = ApiQuery.of(Post.create)
         ..whereNested({
-          'schedule': {'start': '2020-11-27'}
+          'schedule': {'start': '2020-11-27'},
         })
         ..whereNested({
-          'schedule': {'end': '2020-11-28'}
+          'schedule': {'end': '2020-11-28'},
         });
       expect(
         post.getBuilder().filters,
         equals({
-          'schedule': {'start': '2020-11-27', 'end': '2020-11-28'}
+          'schedule': {'start': '2020-11-27', 'end': '2020-11-28'},
         }),
       );
       expect(
@@ -193,7 +193,7 @@ void main() {
         equals(
           [
             '?filter[schedule][start]=2020-11-27',
-            '&filter[schedule][end]=2020-11-28'
+            '&filter[schedule][end]=2020-11-28',
           ].join(),
         ),
       );
@@ -204,7 +204,7 @@ void main() {
           true,
           (query, _) => query
             ..whereNested({
-              'user': {'status': 'active'}
+              'user': {'status': 'active'},
             }),
         );
       expect(
@@ -212,7 +212,7 @@ void main() {
         equals({
           'id': 1,
           'title': 'Cool',
-          'user': {'status': 'active'}
+          'user': {'status': 'active'},
         }),
       );
     });
@@ -246,15 +246,15 @@ void main() {
       expect(
         post.getBuilder().filters,
         equals({
-          'status': ['ACTIVE', 'ARCHIVED']
+          'status': ['ACTIVE', 'ARCHIVED'],
         }),
       );
 
       post = ApiQuery.of(Post.create)
         ..whereInNested({
           'user': {
-            'status': ['active', 'inactive']
-          }
+            'status': ['active', 'inactive'],
+          },
         });
       expect(
         post.getBuilder().filters,
@@ -272,13 +272,13 @@ void main() {
       post = ApiQuery.of(Post.create)
         ..whereInNested({
           'schedule': {
-            'start': ['2020-11-27', '2020-11-28']
-          }
+            'start': ['2020-11-27', '2020-11-28'],
+          },
         })
         ..whereInNested({
           'schedule': {
-            'end': ['2020-11-28', '2020-11-29']
-          }
+            'end': ['2020-11-28', '2020-11-29'],
+          },
         });
 
       expect(
@@ -286,8 +286,8 @@ void main() {
         equals({
           'schedule': {
             'start': ['2020-11-27', '2020-11-28'],
-            'end': ['2020-11-28', '2020-11-29']
-          }
+            'end': ['2020-11-28', '2020-11-29'],
+          },
         }),
       );
       expect(
@@ -295,22 +295,22 @@ void main() {
         equals(
           [
             '?filter[schedule][start]=2020-11-27,2020-11-28',
-            '&filter[schedule][end]=2020-11-28,2020-11-29'
+            '&filter[schedule][end]=2020-11-28,2020-11-29',
           ].join(),
         ),
       );
 
       post = ApiQuery.of(Post.create)
         ..whereInNested({
-          'status': ['ACTIVE', 'ARCHIVED']
+          'status': ['ACTIVE', 'ARCHIVED'],
         })
         ..when(
           true,
           (query, _) => query
             ..whereInNested({
               'user': {
-                'status': ['active', 'inactive']
-              }
+                'status': ['active', 'inactive'],
+              },
             }),
         );
 
@@ -319,8 +319,8 @@ void main() {
         equals({
           'status': ['ACTIVE', 'ARCHIVED'],
           'user': {
-            'status': ['active', 'inactive']
-          }
+            'status': ['active', 'inactive'],
+          },
         }),
       );
     });
@@ -355,7 +355,7 @@ void main() {
       final post = ApiQuery.of(Post.create)
         ..selectFromRelations({
           'posts': ['title', 'content'],
-          'user': ['age', 'firstname']
+          'user': ['age', 'firstname'],
         });
 
       expect(post.getBuilder().fields['posts'], equals(['title', 'content']));
@@ -370,14 +370,14 @@ void main() {
       post = ApiQuery.of(Post.create)
         ..params({
           'foo': 'bar',
-          'baz': ['a', 'b']
+          'baz': ['a', 'b'],
         });
 
       expect(
         post.getBuilder().payload,
         equals({
           'foo': 'bar',
-          'baz': ['a', 'b']
+          'baz': ['a', 'b'],
         }),
       );
       expect(post.getBuilder().query(), equals('?foo=bar&baz=a,b'));

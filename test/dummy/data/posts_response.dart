@@ -7,9 +7,9 @@ Iterable<Map<String, dynamic>> postsResponse = [
     'relationships': {
       'tags': [
         {'name': 'super'},
-        {'name': 'awesome'}
-      ]
-    }
+        {'name': 'awesome'},
+      ],
+    },
   },
   {
     'id': 1,
@@ -19,8 +19,8 @@ Iterable<Map<String, dynamic>> postsResponse = [
     'relationships': {
       'tags': [
         {'name': 'super'},
-        {'name': 'awesome'}
-      ]
-    }
+        {'name': 'awesome'},
+      ],
+    },
   }
 ];

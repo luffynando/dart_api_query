@@ -54,7 +54,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [three]
+            'a': [three],
           },
           opts: StringifyOptions(
             encodeValuesOnly: true,
@@ -66,7 +66,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [three]
+            'a': [three],
           },
           opts: StringifyOptions(
             encodeValuesOnly: true,
@@ -99,8 +99,8 @@ void main() {
       expect(
         Qs.stringify({
           'a': {
-            'b': {'c': null}
-          }
+            'b': {'c': null},
+          },
         }),
         equals('a%5Bb%5D%5Bc%5D='),
       );
@@ -108,8 +108,8 @@ void main() {
         Qs.stringify(
           {
             'a': {
-              'b': {'c': null}
-            }
+              'b': {'c': null},
+            },
           },
           opts: StringifyOptions(strictNullHandling: true),
         ),
@@ -118,8 +118,8 @@ void main() {
       expect(
         Qs.stringify({
           'a': {
-            'b': {'c': false}
-          }
+            'b': {'c': false},
+          },
         }),
         equals('a%5Bb%5D%5Bc%5D=false'),
       );
@@ -128,7 +128,7 @@ void main() {
     test('stringifies a nested object', () {
       expect(
         Qs.stringify({
-          'a': {'b': 'c'}
+          'a': {'b': 'c'},
         }),
         equals('a%5Bb%5D=c'),
       );
@@ -136,9 +136,9 @@ void main() {
         Qs.stringify({
           'a': {
             'b': {
-              'c': {'d': 'e'}
-            }
-          }
+              'c': {'d': 'e'},
+            },
+          },
         }),
         equals('a%5Bb%5D%5Bc%5D%5Bd%5D=e'),
       );
@@ -148,7 +148,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': {'b': 'c'}
+            'a': {'b': 'c'},
           },
           opts: StringifyOptions(allowDots: true),
         ),
@@ -159,9 +159,9 @@ void main() {
           {
             'a': {
               'b': {
-                'c': {'d': 'e'}
-              }
-            }
+                'c': {'d': 'e'},
+              },
+            },
           },
           opts: StringifyOptions(allowDots: true),
         ),
@@ -173,7 +173,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': ['b', 'c', 'd']
+            'a': ['b', 'c', 'd'],
           },
           opts: StringifyOptions(arrayFormat: ArrayFormat.indices),
         ),
@@ -183,7 +183,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': ['b', 'c', 'd']
+            'a': ['b', 'c', 'd'],
           },
           opts: StringifyOptions(arrayFormat: ArrayFormat.brackets),
         ),
@@ -193,7 +193,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': ['b', 'c', 'd']
+            'a': ['b', 'c', 'd'],
           },
           opts: StringifyOptions(arrayFormat: ArrayFormat.comma),
         ),
@@ -202,7 +202,7 @@ void main() {
       );
       expect(
         Qs.stringify({
-          'a': ['b', 'c', 'd']
+          'a': ['b', 'c', 'd'],
         }),
         equals('a%5B0%5D=b&a%5B1%5D=c&a%5B2%5D=d'),
         reason: 'default => indices',
@@ -223,7 +223,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': {'b': 'c', 'd': null}
+            'a': {'b': 'c', 'd': null},
           },
           opts: StringifyOptions(skipNulls: true),
         ),
@@ -235,7 +235,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': ['b', 'c', 'd']
+            'a': ['b', 'c', 'd'],
           },
           opts: StringifyOptions(indices: false),
         ),
@@ -288,7 +288,7 @@ void main() {
         expect(
           Qs.stringify(
             {
-              'a': ['c']
+              'a': ['c'],
             },
             opts: StringifyOptions(
               encodeValuesOnly: true,
@@ -300,7 +300,7 @@ void main() {
         expect(
           Qs.stringify(
             {
-              'a': ['c']
+              'a': ['c'],
             },
             opts: StringifyOptions(
               encodeValuesOnly: true,
@@ -312,7 +312,7 @@ void main() {
         expect(
           Qs.stringify(
             {
-              'a': ['c']
+              'a': ['c'],
             },
             opts: StringifyOptions(
               encodeValuesOnly: true,
@@ -324,7 +324,7 @@ void main() {
         expect(
           Qs.stringify(
             {
-              'a': ['c']
+              'a': ['c'],
             },
             opts: StringifyOptions(
               encodeValuesOnly: true,
@@ -337,7 +337,7 @@ void main() {
         expect(
           Qs.stringify(
             {
-              'a': ['c']
+              'a': ['c'],
             },
             opts: StringifyOptions(encodeValuesOnly: true),
           ),
@@ -349,7 +349,7 @@ void main() {
         expect(
           Qs.stringify(
             {
-              'a': ['c', 'd']
+              'a': ['c', 'd'],
             },
             opts: StringifyOptions(
               encodeValuesOnly: true,
@@ -361,7 +361,7 @@ void main() {
         expect(
           Qs.stringify(
             {
-              'a': ['c', 'd']
+              'a': ['c', 'd'],
             },
             opts: StringifyOptions(
               encodeValuesOnly: true,
@@ -373,7 +373,7 @@ void main() {
         expect(
           Qs.stringify(
             {
-              'a': ['c', 'd']
+              'a': ['c', 'd'],
             },
             opts: StringifyOptions(
               encodeValuesOnly: true,
@@ -385,7 +385,7 @@ void main() {
         expect(
           Qs.stringify(
             {
-              'a': ['c', 'd']
+              'a': ['c', 'd'],
             },
             opts: StringifyOptions(encodeValuesOnly: true),
           ),
@@ -397,7 +397,7 @@ void main() {
         expect(
           Qs.stringify(
             {
-              'a': ['c,d', 'e']
+              'a': ['c,d', 'e'],
             },
             opts: StringifyOptions(
               encodeValuesOnly: true,
@@ -409,7 +409,7 @@ void main() {
         expect(
           Qs.stringify(
             {
-              'a': ['c,d', 'e']
+              'a': ['c,d', 'e'],
             },
             opts: StringifyOptions(arrayFormat: ArrayFormat.comma),
           ),
@@ -423,8 +423,8 @@ void main() {
         Qs.stringify(
           {
             'a': {
-              'b': ['c', 'd']
-            }
+              'b': ['c', 'd'],
+            },
           },
           opts: StringifyOptions(
             encodeValuesOnly: true,
@@ -437,8 +437,8 @@ void main() {
         Qs.stringify(
           {
             'a': {
-              'b': ['c', 'd']
-            }
+              'b': ['c', 'd'],
+            },
           },
           opts: StringifyOptions(
             encodeValuesOnly: true,
@@ -451,8 +451,8 @@ void main() {
         Qs.stringify(
           {
             'a': {
-              'b': ['c', 'd']
-            }
+              'b': ['c', 'd'],
+            },
           },
           opts: StringifyOptions(
             encodeValuesOnly: true,
@@ -465,8 +465,8 @@ void main() {
         Qs.stringify(
           {
             'a': {
-              'b': ['c', 'd']
-            }
+              'b': ['c', 'd'],
+            },
           },
           opts: StringifyOptions(encodeValuesOnly: true),
         ),
@@ -478,7 +478,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: false,
@@ -490,7 +490,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: false,
@@ -502,7 +502,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: false,
@@ -514,7 +514,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: false,
@@ -527,7 +527,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: true,
@@ -540,7 +540,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: true,
@@ -553,7 +553,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: true,
@@ -566,7 +566,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: true,
@@ -580,7 +580,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: true,
@@ -593,7 +593,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: true,
@@ -606,7 +606,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: true,
@@ -619,7 +619,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [',', '', 'c,d%']
+            'a': [',', '', 'c,d%'],
           },
           opts: StringifyOptions(
             encode: true,
@@ -769,8 +769,8 @@ void main() {
         Qs.stringify(
           {
             'a': {
-              'b': ['c', 'd']
-            }
+              'b': ['c', 'd'],
+            },
           },
           opts: StringifyOptions(
             allowDots: true,
@@ -785,8 +785,8 @@ void main() {
         Qs.stringify(
           {
             'a': {
-              'b': ['c', 'd']
-            }
+              'b': ['c', 'd'],
+            },
           },
           opts: StringifyOptions(
             allowDots: true,
@@ -801,8 +801,8 @@ void main() {
         Qs.stringify(
           {
             'a': {
-              'b': ['c', 'd']
-            }
+              'b': ['c', 'd'],
+            },
           },
           opts: StringifyOptions(
             allowDots: true,
@@ -817,8 +817,8 @@ void main() {
         Qs.stringify(
           {
             'a': {
-              'b': ['c', 'd']
-            }
+              'b': ['c', 'd'],
+            },
           },
           opts: StringifyOptions(
             allowDots: true,
@@ -835,8 +835,8 @@ void main() {
         Qs.stringify(
           {
             'a': [
-              {'b': 'c'}
-            ]
+              {'b': 'c'},
+            ],
           },
           opts: StringifyOptions(arrayFormat: ArrayFormat.indices),
         ),
@@ -847,8 +847,8 @@ void main() {
         Qs.stringify(
           {
             'a': [
-              {'b': 'c'}
-            ]
+              {'b': 'c'},
+            ],
           },
           opts: StringifyOptions(arrayFormat: ArrayFormat.brackets),
         ),
@@ -858,8 +858,8 @@ void main() {
       expect(
         Qs.stringify({
           'a': [
-            {'b': 'c'}
-          ]
+            {'b': 'c'},
+          ],
         }),
         equals('a%5B0%5D%5Bb%5D=c'),
         reason: 'default => indices',
@@ -871,10 +871,10 @@ void main() {
             'a': [
               {
                 'b': {
-                  'c': [1]
-                }
+                  'c': [1],
+                },
               }
-            ]
+            ],
           },
           opts: StringifyOptions(arrayFormat: ArrayFormat.indices),
         ),
@@ -887,10 +887,10 @@ void main() {
             'a': [
               {
                 'b': {
-                  'c': [1]
-                }
+                  'c': [1],
+                },
               }
-            ]
+            ],
           },
           opts: StringifyOptions(arrayFormat: ArrayFormat.brackets),
         ),
@@ -902,10 +902,10 @@ void main() {
           'a': [
             {
               'b': {
-                'c': [1]
-              }
+                'c': [1],
+              },
             }
-          ]
+          ],
         }),
         equals('a%5B0%5D%5Bb%5D%5Bc%5D%5B0%5D=1'),
         reason: 'default => indices',
@@ -919,8 +919,8 @@ void main() {
             'a': [
               {'b': 1},
               2,
-              3
-            ]
+              3,
+            ],
           },
           opts: StringifyOptions(
             encodeValuesOnly: true,
@@ -936,8 +936,8 @@ void main() {
             'a': [
               {'b': 1},
               2,
-              3
-            ]
+              3,
+            ],
           },
           opts: StringifyOptions(
             encodeValuesOnly: true,
@@ -953,8 +953,8 @@ void main() {
             'a': [
               {'b': 1},
               2,
-              3
-            ]
+              3,
+            ],
           },
           opts: StringifyOptions(
             encodeValuesOnly: true,
@@ -971,8 +971,8 @@ void main() {
             'a': [
               {'b': 1},
               2,
-              3
-            ]
+              3,
+            ],
           },
           opts: StringifyOptions(encodeValuesOnly: true),
         ),
@@ -986,8 +986,8 @@ void main() {
         Qs.stringify(
           {
             'a': [
-              {'b': 'c'}
-            ]
+              {'b': 'c'},
+            ],
           },
           opts: StringifyOptions(
             allowDots: true,
@@ -1002,8 +1002,8 @@ void main() {
         Qs.stringify(
           {
             'a': [
-              {'b': 'c'}
-            ]
+              {'b': 'c'},
+            ],
           },
           opts: StringifyOptions(
             allowDots: true,
@@ -1018,8 +1018,8 @@ void main() {
         Qs.stringify(
           {
             'a': [
-              {'b': 'c'}
-            ]
+              {'b': 'c'},
+            ],
           },
           opts: StringifyOptions(
             allowDots: true,
@@ -1036,10 +1036,10 @@ void main() {
             'a': [
               {
                 'b': {
-                  'c': [1]
-                }
+                  'c': [1],
+                },
               }
-            ]
+            ],
           },
           opts: StringifyOptions(
             allowDots: true,
@@ -1056,10 +1056,10 @@ void main() {
             'a': [
               {
                 'b': {
-                  'c': [1]
-                }
+                  'c': [1],
+                },
               }
-            ]
+            ],
           },
           opts: StringifyOptions(
             allowDots: true,
@@ -1076,10 +1076,10 @@ void main() {
             'a': [
               {
                 'b': {
-                  'c': [1]
-                }
+                  'c': [1],
+                },
               }
-            ]
+            ],
           },
           opts: StringifyOptions(
             allowDots: true,
@@ -1096,8 +1096,8 @@ void main() {
         Qs.stringify(
           {
             'a': [
-              {'b': 'c'}
-            ]
+              {'b': 'c'},
+            ],
           },
           opts: StringifyOptions(indices: false),
         ),
@@ -1109,7 +1109,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': ['b', 'c']
+            'a': ['b', 'c'],
           },
           opts: StringifyOptions(indices: true),
         ),
@@ -1121,7 +1121,7 @@ void main() {
         () {
       expect(
         Qs.stringify({
-          'a': ['b', 'c']
+          'a': ['b', 'c'],
         }),
         equals('a%5B0%5D=b&a%5B1%5D=c'),
       );
@@ -1131,7 +1131,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': ['b', 'c']
+            'a': ['b', 'c'],
           },
           opts: StringifyOptions(arrayFormat: ArrayFormat.indices),
         ),
@@ -1143,7 +1143,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': ['b', 'c']
+            'a': ['b', 'c'],
           },
           opts: StringifyOptions(arrayFormat: ArrayFormat.repeat),
         ),
@@ -1155,7 +1155,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': ['b', 'c']
+            'a': ['b', 'c'],
           },
           opts: StringifyOptions(arrayFormat: ArrayFormat.brackets),
         ),
@@ -1166,7 +1166,7 @@ void main() {
     test('stringifies a complicated object', () {
       expect(
         Qs.stringify({
-          'a': {'b': 'c', 'd': 'e'}
+          'a': {'b': 'c', 'd': 'e'},
         }),
         equals('a%5Bb%5D=c&a%5Bd%5D=e'),
       );
@@ -1193,14 +1193,14 @@ void main() {
 
       expect(
         Qs.stringify({
-          'a': {'b': ''}
+          'a': {'b': ''},
         }),
         equals('a%5Bb%5D='),
       );
       expect(
         Qs.stringify(
           {
-            'a': {'b': null}
+            'a': {'b': null},
           },
           opts: StringifyOptions(strictNullHandling: true),
         ),
@@ -1209,7 +1209,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': {'b': null}
+            'a': {'b': null},
           },
           opts: StringifyOptions(strictNullHandling: false),
         ),
@@ -1223,7 +1223,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(encode: false),
         ),
@@ -1235,7 +1235,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1249,7 +1249,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1263,7 +1263,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1277,7 +1277,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1291,7 +1291,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1307,7 +1307,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1322,7 +1322,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1337,7 +1337,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1352,7 +1352,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1367,7 +1367,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1384,7 +1384,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1399,7 +1399,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1414,7 +1414,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1429,7 +1429,7 @@ void main() {
           {
             'a': <dynamic>[],
             'b': [null],
-            'c': 'c'
+            'c': 'c',
           },
           opts: StringifyOptions(
             encode: false,
@@ -1468,14 +1468,14 @@ void main() {
       expect(Qs.stringify({'a': true}), equals('a=true'));
       expect(
         Qs.stringify({
-          'a': {'b': true}
+          'a': {'b': true},
         }),
         equals('a%5Bb%5D=true'),
       );
       expect(Qs.stringify({'b': false}), equals('b=false'));
       expect(
         Qs.stringify({
-          'b': {'c': false}
+          'b': {'c': false},
         }),
         equals('b%5Bc%5D=false'),
       );
@@ -1485,7 +1485,7 @@ void main() {
       expect(Qs.stringify({'a': StringBuffer('test')}), equals('a=test'));
       expect(
         Qs.stringify({
-          'a': {'b': StringBuffer('test')}
+          'a': {'b': StringBuffer('test')},
         }),
         equals('a%5Bb%5D=test'),
       );
@@ -1536,19 +1536,19 @@ void main() {
       final hourOfDay = {'function': 'hour_of_day'};
       final p1 = {
         'function': 'gte',
-        'arguments': [hourOfDay, 0]
+        'arguments': [hourOfDay, 0],
       };
       final p2 = {
         'function': 'lte',
-        'arguments': [hourOfDay, 23]
+        'arguments': [hourOfDay, 23],
       };
 
       expect(
         Qs.stringify(
           {
             'filters': {
-              r'$and': [p1, p2]
-            }
+              r'$and': [p1, p2],
+            },
           },
           opts: StringifyOptions(encodeValuesOnly: true),
         ),
@@ -1573,7 +1573,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': {'b': 'c'}
+            'a': {'b': 'c'},
           },
           opts: StringifyOptions(encode: false),
         ),
@@ -1608,7 +1608,7 @@ void main() {
           {
             'a': 'c',
             'z': {'j': 'a', 'i': 'b'},
-            'b': 'f'
+            'b': 'f',
           },
           opts: StringifyOptions(sort: sort),
         ),
@@ -1627,9 +1627,9 @@ void main() {
             'a': 'a',
             'z': {
               'zj': {'zjb': 'zjb', 'zja': 'zja'},
-              'zi': {'zib': 'zib', 'zia': 'zia'}
+              'zi': {'zib': 'zib', 'zia': 'zia'},
             },
-            'b': 'b'
+            'b': 'b',
           },
           opts: StringifyOptions(
             sort: sort,
@@ -1646,9 +1646,9 @@ void main() {
             'a': 'a',
             'z': {
               'zj': {'zjb': 'zjb', 'zja': 'zja'},
-              'zi': {'zib': 'zib', 'zia': 'zia'}
+              'zi': {'zib': 'zib', 'zia': 'zia'},
             },
-            'b': 'b'
+            'b': 'b',
           },
           opts: StringifyOptions(encode: false),
         ),
@@ -1684,7 +1684,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [date]
+            'a': [date],
           },
           opts: StringifyOptions(
             serializeDate: (DateTime d) {
@@ -1699,7 +1699,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': [date]
+            'a': [date],
           },
           opts: StringifyOptions(
             serializeDate: (DateTime d) {
@@ -1787,8 +1787,8 @@ void main() {
             'c': ['d', 'e=f'],
             'f': [
               ['g'],
-              ['h']
-            ]
+              ['h'],
+            ],
           },
           opts: StringifyOptions(encodeValuesOnly: true),
         ),
@@ -1800,8 +1800,8 @@ void main() {
           'c': ['d', 'e'],
           'f': [
             ['g'],
-            ['h']
-          ]
+            ['h'],
+          ],
         }),
         equals('a=b&c%5B0%5D=d&c%5B1%5D=e&f%5B0%5D%5B0%5D=g&f%5B1%5D%5B0%5D=h'),
       );
@@ -1811,7 +1811,7 @@ void main() {
       expect(
         Qs.stringify(
           {
-            'a': {'b': null}
+            'a': {'b': null},
           },
           opts: StringifyOptions(
             encodeValuesOnly: true,
@@ -1902,15 +1902,15 @@ void main() {
     test('objects inside arrays', () {
       final obj = {
         'a': {
-          'b': {'c': 'd', 'e': 'f'}
-        }
+          'b': {'c': 'd', 'e': 'f'},
+        },
       };
       final withArray = {
         'a': {
           'b': [
-            {'c': 'd', 'e': 'f'}
-          ]
-        }
+            {'c': 'd', 'e': 'f'},
+          ],
+        },
       };
 
       expect(
@@ -1989,8 +1989,8 @@ void main() {
         Qs.stringify(
           {
             '': {
-              '': [2, 3]
-            }
+              '': [2, 3],
+            },
           },
           opts: StringifyOptions(encode: false),
         ),
@@ -2001,8 +2001,8 @@ void main() {
           {
             '': {
               '': [2, 3],
-              'a': 2
-            }
+              'a': 2,
+            },
           },
           opts: StringifyOptions(encode: false),
         ),

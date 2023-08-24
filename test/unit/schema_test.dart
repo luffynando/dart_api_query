@@ -531,5 +531,41 @@ void main() {
         expect(comment.text, 'Owh!');
       },
     );
+
+    test(
+      'save() makes a PUT req when ID of obj exists (nested obj, custom PK)',
+      () async {
+        Post.customKey = 'someId';
+
+        final post = Post({'id': 1, 'someId': 'xs911-8cf12', 'title': 'Cool!'});
+
+        dioAdapter
+          ..onGet(
+            'http://localhost/posts/${post.someId}/comments',
+            (server) => server.reply(200, commentsResponse),
+          )
+          ..onPut(
+            'http://localhost/posts/${post.someId}/comments/1',
+            (server) => server.reply(
+              200,
+              <String, dynamic>{}
+                ..addAll(commentsResponse.first)
+                ..addAll({'text': 'Owh!'}),
+            ),
+            data: jsonEncode(
+              {}
+                ..addAll(commentsResponse.first)
+                ..addAll({'text': 'Owh!'}),
+            ),
+          );
+
+        var comment = await post.comments().first();
+        expect(comment.text, equals('Hello'));
+
+        comment.text = 'Owh!';
+        comment = await post.comments(current: comment).save();
+        expect(comment.text, 'Owh!');
+      },
+    );
   });
 }

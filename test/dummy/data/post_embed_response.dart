@@ -8,9 +8,9 @@ Map<String, dynamic> postEmbedResponse = {
       'tags': {
         'data': [
           {'name': 'super'},
-          {'name': 'awesome'}
+          {'name': 'awesome'},
         ],
-      }
-    }
+      },
+    },
   },
 };
