@@ -1,5 +1,5 @@
 name: dart_api_query
-description: A starting point for Dart libraries or applications.
+description: Elegant and simple way to build requests for REST API.
 version: 1.0.0
 repository: https://github.com/luffynando/dart_api_query
 
