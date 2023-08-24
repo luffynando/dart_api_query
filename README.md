@@ -1,39 +1,12 @@
-<!-- 
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Elegant and simple way to build requests for REST API
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
+This package helps you to quickly to build requests for REST API. Move your
+logic and backend requests to dedicated classes.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages). 
--->
+🔥 If you use Laravel, this package matches perfectly
+with [spatie/laravel-query-builder](https://github.com/spatie/laravel-query-builder).
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+## Thanks
 
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
+* Inspiration
+  from [robsontenorio/vue-api-query](https://github.com/robsontenorio/vue-api-query).
