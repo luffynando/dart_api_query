@@ -187,31 +187,6 @@ final class ApiQuery<T extends Schema> {
     _fromResource = url;
   }
 
-  /// Create a new related model.
-  void forModel(List<Schema> args) {
-    if (args.isEmpty) {
-      throw ArgumentError(
-        'The forModel() method takes a minimum of one argument.',
-      );
-    }
-
-    final url = StringBuffer(baseUrl());
-
-    for (final object in args) {
-      if (object.isNew) {
-        throw ArgumentError(
-          'The object referenced of forModel() method has an invalid id.',
-        );
-      }
-
-      url.write('/${object.resource()}/${object.id}');
-    }
-
-    url.write('/${_schema.resource()}');
-
-    from(url.toString());
-  }
-
   /// Retrieve current endpoint.
   String endpoint() {
     if (_fromResource != null) {
@@ -325,7 +300,9 @@ final class ApiQuery<T extends Schema> {
       throw ArgumentError('This schema has a empty ID.');
     }
 
-    return ApiQuery.http!.delete<Y>(endpoint()).then((value) => value.data);
+    return ApiQuery.http!
+        .delete<Y>(endpoint(), options: _options)
+        .then((value) => value.data);
   }
 
   /// Save or update a model in the database, then return the instance.
@@ -344,6 +321,7 @@ final class ApiQuery<T extends Schema> {
         .post<Map<String, dynamic>>(
       endpoint(),
       data: _serializer.serialize(_schema.resourceObject),
+      options: _options,
     )
         .then(
       (response) {
@@ -361,6 +339,7 @@ final class ApiQuery<T extends Schema> {
         .put<Map<String, dynamic>>(
       endpoint(),
       data: _serializer.serialize(_schema.resourceObject),
+      options: _options,
     )
         .then(
       (response) {

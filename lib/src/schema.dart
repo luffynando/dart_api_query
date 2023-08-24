@@ -16,13 +16,6 @@ class Schema {
   /// Create schema with attributes
   Schema.create(this.resourceObject);
 
-  /// Create from another schema model
-  Schema.from(Schema other)
-      : this.create(ResourceObject.from(other.resourceObject));
-
-  /// Create from other mode shallow copy
-  Schema.shallowCopy(Schema other) : this.create(other.resourceObject);
-
   final Serializer _serializer = Serializer();
 
   /// A wrap object from raw response

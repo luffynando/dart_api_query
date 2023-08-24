@@ -567,5 +567,259 @@ void main() {
         expect(comment.text, 'Owh!');
       },
     );
+
+    test(
+      'save() method makes a POST request when ID of object is null',
+      () async {
+        final postSaveResponse = {
+          'id': 1,
+          'text': 'Cool!',
+          'user': {'firstname': 'John', 'lastname': 'Doe', 'age': 25},
+          'relationships': {
+            'tags': [
+              {'name': 'super'},
+              {'name': 'awesome'},
+            ],
+          },
+        };
+
+        dioAdapter.onPost(
+          'http://localhost/posts',
+          (server) => server.reply(
+            200,
+            postSaveResponse,
+            delay: const Duration(milliseconds: 500),
+          ),
+          data: jsonEncode({'id': null, 'text': 'Cool!'}),
+        );
+
+        var post = Post({'id': null, 'text': 'Cool!'});
+        post = await ApiQuery.of(Post.create, current: post).save();
+
+        expect(post.attributes, equals(postSaveResponse));
+        expect(post, isA<Post>());
+        expect(post.user, isA<User>());
+        expect(post.relationships['tags'], everyElement(isA<Tag>()));
+      },
+    );
+
+    test(
+      'a request from delete() method hits the right resource',
+      () async {
+        const serverResponse = <String, dynamic>{};
+
+        dioAdapter.onDelete(
+          'http://localhost/posts/1',
+          (server) => server.reply(
+            200,
+            serverResponse,
+            delay: const Duration(milliseconds: 500),
+          ),
+        );
+
+        final post = Post({'id': 1});
+        final response =
+            await ApiQuery.of(Post.create, current: post).delete<dynamic>();
+
+        expect(response, equals(serverResponse));
+      },
+    );
+
+    test(
+      'a request from delete() method hits the right resource (custom PK)',
+      () async {
+        const serverResponse = <String, dynamic>{};
+        Post.customKey = 'someId';
+
+        final post = Post({'id': 1, 'someId': 'xs911-8cf12', 'text': 'Cool!'});
+
+        dioAdapter.onDelete(
+          'http://localhost/posts/${post.someId}',
+          (server) => server.reply(
+            200,
+            serverResponse,
+            delay: const Duration(milliseconds: 500),
+          ),
+        );
+
+        final response =
+            await ApiQuery.of(Post.create, current: post).delete<dynamic>();
+
+        expect(response, equals(serverResponse));
+      },
+    );
+
+    test(
+      'a request from delete() when model has not ID throws a exception',
+      () async {
+        await expectLater(
+          () => ApiQuery.of(Post.create, current: Post()).delete<dynamic>(),
+          throwsA(
+            (dynamic e) =>
+                e is ArgumentError &&
+                e.message == 'This schema has a empty ID.',
+          ),
+        );
+      },
+    );
+
+    test(
+      'a request from delete() hits the right resource (nested object)',
+      () async {
+        const serverResponse = <String, dynamic>{};
+
+        dioAdapter
+          ..onGet(
+            'http://localhost/posts/1/comments',
+            (server) => server.reply(
+              200,
+              commentsResponse,
+              delay: const Duration(milliseconds: 500),
+            ),
+          )
+          ..onDelete(
+            'http://localhost/posts/1/comments/1',
+            (server) => server.reply(
+              200,
+              serverResponse,
+              delay: const Duration(milliseconds: 500),
+            ),
+          );
+
+        final post = Post({'id': 1});
+        final comment = await post.comments().first();
+        expect(comment.text, equals('Hello'));
+
+        final response =
+            await post.comments(current: comment).delete<dynamic>();
+        expect(response, equals(serverResponse));
+      },
+    );
+
+    test(
+      'a req from delete() hits the right resource (nested obj, customPK)',
+      () async {
+        Post.customKey = 'someId';
+        final post = Post({'id': 1, 'someId': 'xs911-8cf12', 'text': 'Cool!'});
+        const serverResponse = <String, dynamic>{};
+
+        dioAdapter
+          ..onGet(
+            'http://localhost/posts/${post.someId}/comments',
+            (server) => server.reply(
+              200,
+              commentsResponse,
+              delay: const Duration(milliseconds: 500),
+            ),
+          )
+          ..onDelete(
+            'http://localhost/posts/${post.someId}/comments/1',
+            (server) => server.reply(
+              200,
+              serverResponse,
+              delay: const Duration(milliseconds: 500),
+            ),
+          );
+
+        final comment = await post.comments().first();
+        expect(comment.text, equals('Hello'));
+
+        final response =
+            await post.comments(current: comment).delete<dynamic>();
+        expect(response, equals(serverResponse));
+      },
+    );
+
+    test('a request with custom() method hits the right resource', () async {
+      const serverResponse = <String, dynamic>{};
+      dioAdapter.onGet(
+        'http://localhost/postz',
+        (server) => server.reply(
+          200,
+          serverResponse,
+          delay: const Duration(milliseconds: 500),
+        ),
+      );
+
+      final query = ApiQuery.of(Post.create)..custom(['postz']);
+      final response = await query.first();
+
+      expect(response.attributes, equals(serverResponse));
+    });
+
+    test(
+      'custom() called with multiple obj/strings gets the correct resource',
+      () async {
+        const serverResponse = <String, dynamic>{};
+        dioAdapter.onGet(
+          'http://localhost/users/1/postz/comments',
+          (server) => server.reply(
+            200,
+            serverResponse,
+            delay: const Duration(milliseconds: 500),
+          ),
+        );
+
+        final user = User({'id': 1});
+        final comment = Comment();
+
+        final response = await (ApiQuery.of(Comment.create)
+              ..custom([user, 'postz', comment]))
+            .getOrNull();
+
+        expect(response, isNotNull);
+      },
+    );
+
+    test('a request from load() method hits right resource', () async {
+      const serverResponse = <String, dynamic>{};
+      dioAdapter.onGet(
+        'http://localhost/users/1/posts',
+        (server) => server.reply(
+          200,
+          serverResponse,
+          delay: const Duration(milliseconds: 500),
+        ),
+      );
+
+      final user = User({'id': 1});
+      final response = await user.posts().get();
+      expect(response, isNotNull);
+    });
+
+    test(
+      'a request from load() with a find() hits right resource',
+      () async {
+        const serverResponse = <String, dynamic>{};
+        dioAdapter.onGet(
+          'http://localhost/users/1/posts/1',
+          (server) => server.reply(
+            200,
+            serverResponse,
+            delay: const Duration(milliseconds: 500),
+          ),
+        );
+
+        final user = User({'id': 1});
+        final response = await user.posts().find(1);
+        expect(response, isNotNull);
+      },
+    );
+
+    test('a request from load() method returns a array of Models', () async {
+      dioAdapter.onGet(
+        'http://localhost/users/1/posts',
+        (server) => server.reply(
+          200,
+          postsResponse,
+          delay: const Duration(milliseconds: 500),
+        ),
+      );
+
+      final user = User({'id': 1});
+      final posts = await user.posts().get();
+
+      expect(posts, everyElement(isA<Post>()));
+    });
   });
 }
