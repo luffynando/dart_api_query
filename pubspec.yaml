@@ -1,12 +1,30 @@
 name: dart_api_query
 description: Elegant and simple way to build requests for REST API.
-version: 1.0.0
+version: 1.0.1
+homepage: https://github.com/luffynando/dart_api_query
 repository: https://github.com/luffynando/dart_api_query
+issue_tracker: https://github.com/luffynando/dart_api_query/issues
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+topics:
+  - laravel
+  - api
+  - rest
+  - query
+  - builder
+  - spatie
 
 environment:
   sdk: ^3.0.6
 
-# Add regular dependencies here.
 dependencies:
   dio: ^5.3.2
   weak_map: ^3.0.0
