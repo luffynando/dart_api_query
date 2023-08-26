@@ -20,7 +20,6 @@ topics:
   - rest
   - query
   - builder
-  - spatie
 
 environment:
   sdk: ^3.0.6
