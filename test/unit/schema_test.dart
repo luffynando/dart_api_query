@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dart_api_query/dart_api_query.dart';
 import 'package:dart_api_query/src/api_query.dart';
 import 'package:dart_api_query/src/resource_object.dart';
 import 'package:dio/dio.dart';
@@ -10,6 +11,7 @@ import '../dummy/data/comments_response.dart';
 import '../dummy/data/post_embed_response.dart';
 import '../dummy/data/post_response.dart';
 import '../dummy/data/posts_response.dart';
+import '../dummy/data/posts_response_paginate.dart';
 import '../dummy/models/comment.dart';
 import '../dummy/models/post.dart';
 import '../dummy/models/tag.dart';
@@ -821,5 +823,39 @@ void main() {
 
       expect(posts, everyElement(isA<Post>()));
     });
+
+    test('paginate() method returns a resource paginate', () async {
+      dioAdapter.onGet(
+        'http://localhost/posts',
+        (server) => server.reply(
+          200,
+          postsResponsePaginate,
+          delay: const Duration(milliseconds: 500),
+        ),
+      );
+
+      final postsPaginate = await ApiQuery.of(Post.create).paginate();
+      expect(postsPaginate, isA<ResourcePagination>());
+
+      expect(postsPaginate.total, equals(2));
+      expect(postsPaginate.models, everyElement(isA<Post>()));
+    });
+
+    test(
+      'paginateOrNull() method returns a null if response is not paginate',
+      () async {
+        dioAdapter.onGet(
+          'http://localhost/posts',
+          (server) => server.reply(
+            200,
+            postsResponse,
+            delay: const Duration(milliseconds: 500),
+          ),
+        );
+
+        final postsPaginate = await ApiQuery.of(Post.create).paginateOrNull();
+        expect(postsPaginate, isNull);
+      },
+    );
   });
 }

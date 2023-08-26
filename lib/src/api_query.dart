@@ -1,5 +1,6 @@
 import 'package:dart_api_query/src/builder.dart';
 import 'package:dart_api_query/src/resource_object.dart';
+import 'package:dart_api_query/src/resource_paginate.dart';
 import 'package:dart_api_query/src/schema.dart';
 import 'package:dart_api_query/src/serializer.dart';
 import 'package:dio/dio.dart';
@@ -286,6 +287,69 @@ final class ApiQuery<T extends Schema> {
     return responseData != null
         ? _serializer.deserializeMany(responseData).map(_createInstance)
         : null;
+  }
+
+  /// Retrieve pagination of models
+  Future<ResourcePagination<T>> paginate([
+    String? totalField = 'total',
+    String? modelField,
+  ]) async {
+    final result = await paginateOrNull(totalField, modelField);
+    if (result == null) {
+      throw StateError('No response data or null.');
+    }
+
+    return result;
+  }
+
+  /// Retrieve pagination of models or null if not data
+  Future<ResourcePagination<T>?> paginateOrNull([
+    String? totalField = 'total',
+    String? modelField,
+  ]) async {
+    var base = _fromResource ?? '${baseUrl()}/${_schema.resource()}';
+    base = _customResource != null ? '${baseUrl()}/$_customResource' : base;
+    final url = '$base${_builder.query()}';
+    final response = await ApiQuery.http!.get<dynamic>(
+      url,
+      options: _options,
+    );
+
+    if (response.data == null) {
+      return null;
+    }
+
+    dynamic responseData = response.data;
+
+    if (responseData is! Map<String, dynamic>) {
+      return null;
+    }
+
+    if (responseData.containsKey('data') &&
+        responseData['data'] is Map<String, dynamic>) {
+      responseData = responseData['data'] as Map<String, dynamic>;
+    }
+
+    final schemaField = modelField ?? _schema.resource();
+
+    if (!responseData.containsKey(schemaField) ||
+        !responseData.containsKey(totalField)) {
+      return null;
+    }
+
+    final models = responseData[schemaField] is Iterable
+        ? responseData[schemaField] as Iterable<dynamic>
+        : responseData[schemaField] is Map<String, dynamic>
+            ? [responseData[schemaField]]
+            : <dynamic>[];
+
+    final total =
+        responseData[totalField] is int ? responseData[totalField] as int : 0;
+
+    return ResourcePagination(
+      _serializer.deserializeMany(models).map(_createInstance),
+      total,
+    );
   }
 
   /// Delete the model from the database.
