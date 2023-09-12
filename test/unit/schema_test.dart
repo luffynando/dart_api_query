@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:dart_api_query/dart_api_query.dart';
-import 'package:dart_api_query/src/api_query.dart';
-import 'package:dart_api_query/src/resource_object.dart';
 import 'package:dio/dio.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:test/test.dart';

@@ -290,11 +290,12 @@ final class ApiQuery<T extends Schema> {
   }
 
   /// Retrieve pagination of models
-  Future<ResourcePagination<T>> paginate([
-    String? totalField = 'total',
+  Future<ResourcePagination<T>> paginate({
+    String totalField = 'total',
     String? modelField,
-  ]) async {
-    final result = await paginateOrNull(totalField, modelField);
+  }) async {
+    final result =
+        await paginateOrNull(totalField: totalField, modelField: modelField);
     if (result == null) {
       throw StateError('No response data or null.');
     }
@@ -303,10 +304,10 @@ final class ApiQuery<T extends Schema> {
   }
 
   /// Retrieve pagination of models or null if not data
-  Future<ResourcePagination<T>?> paginateOrNull([
-    String? totalField = 'total',
+  Future<ResourcePagination<T>?> paginateOrNull({
+    String totalField = 'total',
     String? modelField,
-  ]) async {
+  }) async {
     var base = _fromResource ?? '${baseUrl()}/${_schema.resource()}';
     base = _customResource != null ? '${baseUrl()}/$_customResource' : base;
     final url = '$base${_builder.query()}';
