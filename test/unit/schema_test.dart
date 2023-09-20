@@ -95,6 +95,23 @@ void main() {
       },
     );
 
+    test(
+      'firstOrNull() method returns null when unauthorized',
+          () async {
+        dioAdapter.onGet(
+          'http://localhost/posts',
+              (server) => server.reply(
+            401,
+            <dynamic>[],
+            delay: const Duration(milliseconds: 500),
+          ),
+        );
+
+        final post = await ApiQuery.of(Post.create).firstOrNull();
+        expect(post, isNull);
+      },
+    );
+
     test('find() method returns a object as instance of such Schema', () async {
       dioAdapter.onGet(
         'http://localhost/posts/1',

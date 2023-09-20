@@ -241,16 +241,20 @@ final class ApiQuery<T extends Schema> {
   Future<T?> findOrNull(dynamic id) async {
     final base = _fromResource ?? '${baseUrl()}/${_schema.resource()}';
     final url = '$base/$id${_builder.query()}';
-    final response = await ApiQuery.http!.get<Map<String, dynamic>>(
-      url,
-      options: _options,
-    );
+    try {
+      final response = await ApiQuery.http!.get<Map<String, dynamic>>(
+        url,
+        options: _options,
+      );
 
-    if (response.data == null || response.data == <String, dynamic>{}) {
+      if (response.data == null || response.data == <String, dynamic>{}) {
+        return null;
+      }
+
+      return _createInstance(_serializer.deserialize(response.data!));
+    } catch (e) {
       return null;
     }
-
-    return _createInstance(_serializer.deserialize(response.data!));
   }
 
   /// Execute the query and get all results.
@@ -263,30 +267,34 @@ final class ApiQuery<T extends Schema> {
     var base = _fromResource ?? '${baseUrl()}/${_schema.resource()}';
     base = _customResource != null ? '${baseUrl()}/$_customResource' : base;
     final url = '$base${_builder.query()}';
-    final response = await ApiQuery.http!.get<dynamic>(
-      url,
-      options: _options,
-    );
+    try {
+      final response = await ApiQuery.http!.get<dynamic>(
+        url,
+        options: _options,
+      );
 
-    if (response.data == null) {
+      if (response.data == null) {
+        return null;
+      }
+
+      dynamic responseData = response.data;
+      responseData = responseData is Iterable
+          ? responseData
+          : responseData is Map<String, dynamic>
+              ? responseData.containsKey('data')
+                  ? responseData['data'] is Iterable
+                      ? responseData['data']
+                      : responseData['data'] is Map<String, dynamic>
+                          ? [responseData['data']]
+                          : null
+                  : [responseData]
+              : null;
+      return responseData != null
+          ? _serializer.deserializeMany(responseData).map(_createInstance)
+          : null;
+    } catch (e) {
       return null;
     }
-
-    dynamic responseData = response.data;
-    responseData = responseData is Iterable
-        ? responseData
-        : responseData is Map<String, dynamic>
-            ? responseData.containsKey('data')
-                ? responseData['data'] is Iterable
-                    ? responseData['data']
-                    : responseData['data'] is Map<String, dynamic>
-                        ? [responseData['data']]
-                        : null
-                : [responseData]
-            : null;
-    return responseData != null
-        ? _serializer.deserializeMany(responseData).map(_createInstance)
-        : null;
   }
 
   /// Retrieve pagination of models
@@ -311,46 +319,51 @@ final class ApiQuery<T extends Schema> {
     var base = _fromResource ?? '${baseUrl()}/${_schema.resource()}';
     base = _customResource != null ? '${baseUrl()}/$_customResource' : base;
     final url = '$base${_builder.query()}';
-    final response = await ApiQuery.http!.get<dynamic>(
-      url,
-      options: _options,
-    );
 
-    if (response.data == null) {
+    try {
+      final response = await ApiQuery.http!.get<dynamic>(
+        url,
+        options: _options,
+      );
+
+      if (response.data == null) {
+        return null;
+      }
+
+      dynamic responseData = response.data;
+
+      if (responseData is! Map<String, dynamic>) {
+        return null;
+      }
+
+      if (responseData.containsKey('data') &&
+          responseData['data'] is Map<String, dynamic>) {
+        responseData = responseData['data'] as Map<String, dynamic>;
+      }
+
+      final schemaField = modelField ?? _schema.resource();
+
+      if (!responseData.containsKey(schemaField) ||
+          !responseData.containsKey(totalField)) {
+        return null;
+      }
+
+      final models = responseData[schemaField] is Iterable
+          ? responseData[schemaField] as Iterable<dynamic>
+          : responseData[schemaField] is Map<String, dynamic>
+              ? [responseData[schemaField]]
+              : <dynamic>[];
+
+      final total =
+          responseData[totalField] is int ? responseData[totalField] as int : 0;
+
+      return ResourcePagination(
+        _serializer.deserializeMany(models).map(_createInstance),
+        total,
+      );
+    } catch (e) {
       return null;
     }
-
-    dynamic responseData = response.data;
-
-    if (responseData is! Map<String, dynamic>) {
-      return null;
-    }
-
-    if (responseData.containsKey('data') &&
-        responseData['data'] is Map<String, dynamic>) {
-      responseData = responseData['data'] as Map<String, dynamic>;
-    }
-
-    final schemaField = modelField ?? _schema.resource();
-
-    if (!responseData.containsKey(schemaField) ||
-        !responseData.containsKey(totalField)) {
-      return null;
-    }
-
-    final models = responseData[schemaField] is Iterable
-        ? responseData[schemaField] as Iterable<dynamic>
-        : responseData[schemaField] is Map<String, dynamic>
-            ? [responseData[schemaField]]
-            : <dynamic>[];
-
-    final total =
-        responseData[totalField] is int ? responseData[totalField] as int : 0;
-
-    return ResourcePagination(
-      _serializer.deserializeMany(models).map(_createInstance),
-      total,
-    );
   }
 
   /// Delete the model from the database.
