@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.1.2
+- Update dependencies
+- Small fix to pass static analysis
+
 ## 1.1.1
 - Fixed catch 40x errors and 50x errors from dio and wrapped in null value.
 

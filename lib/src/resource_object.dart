@@ -51,7 +51,7 @@ class ResourceObject {
   void setAttribute<T>(String key, T value) {
     dynamic rawValue;
     switch (T) {
-      case String:
+      case == String:
         rawValue = value == '' ? null : value;
       default:
         rawValue = value;

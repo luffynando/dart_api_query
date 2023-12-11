@@ -1,6 +1,6 @@
 name: dart_api_query
 description: Elegant and simple way to build requests for REST API. If you use Laravel, matches with spatie/laravel-query-builder.
-version: 1.1.1
+version: 1.1.2
 homepage: https://github.com/luffynando/dart_api_query
 repository: https://github.com/luffynando/dart_api_query
 issue_tracker: https://github.com/luffynando/dart_api_query/issues
@@ -25,10 +25,10 @@ environment:
   sdk: ^3.0.6
 
 dependencies:
-  dio: ^5.3.2
+  dio: ^5.4.0
   weak_map: ^3.0.0
 
 dev_dependencies:
-  http_mock_adapter: ^0.6.0
-  test: ^1.24.6
+  http_mock_adapter: ^0.6.1
+  test: ^1.24.9
   very_good_analysis: ^5.1.0
