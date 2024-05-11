@@ -1,15 +1,14 @@
 import 'package:dart_api_query/src/builder.dart';
-import 'package:dart_api_query/src/qs/qs.dart';
-import 'package:dart_api_query/src/qs/stringify_options.dart';
 import 'package:dart_api_query/src/query_parameters.dart';
+import 'package:qs_dart/qs_dart.dart';
 
 /// Parse attributes from Builder into query string
 class Parser {
   /// Create a instance of Parser with a builder has parameter
-  Parser(this._builder) : _uri = '';
+  Parser(this._builder) : _uri = StringBuffer();
 
   final Builder _builder;
-  String _uri;
+  final StringBuffer _uri;
 
   /// Final query string
   String query() {
@@ -23,12 +22,12 @@ class Parser {
     limit();
     payload();
 
-    return _uri;
+    return _uri.toString();
   }
 
   /// Reset query string
   void reset() {
-    _uri = '';
+    _uri.clear();
   }
 
   /// Builder has includes
@@ -73,7 +72,7 @@ class Parser {
 
   /// Get query prepend symbol
   String prepend() {
-    return _uri == '' ? '?' : '&';
+    return _uri.toString() == '' ? '?' : '&';
   }
 
   /// Get a parameter names from model
@@ -87,8 +86,10 @@ class Parser {
       return;
     }
 
-    _uri += '${prepend()}${parameterNames().include}=';
-    _uri += _builder.includes.join(',');
+    _uri.writeAll([
+      '${prepend()}${parameterNames().include}=',
+      _builder.includes.join(','),
+    ]);
   }
 
   /// Parser appends
@@ -97,8 +98,10 @@ class Parser {
       return;
     }
 
-    _uri += '${prepend()}${parameterNames().append}=';
-    _uri += _builder.appends.join(',');
+    _uri.writeAll([
+      '${prepend()}${parameterNames().append}=',
+      _builder.appends.join(','),
+    ]);
   }
 
   /// Parser fields
@@ -108,13 +111,13 @@ class Parser {
     }
 
     final fields = {parameterNames().fields: _builder.fields};
-    _uri += prepend();
-    _uri += Qs.stringify(
-      fields,
-      opts: _builder.model.stringifyOptions().merge(
-            StringifyOptions(encode: false),
-          ),
-    );
+    _uri.writeAll([
+      prepend(),
+      QS.encode(
+        fields,
+        _builder.model.stringifyOptions().copyWith(encode: false),
+      ),
+    ]);
   }
 
   /// Parser filters
@@ -124,13 +127,13 @@ class Parser {
     }
 
     final filters = {parameterNames().filter: _builder.filters};
-    _uri += prepend();
-    _uri += Qs.stringify(
-      filters,
-      opts: _builder.model.stringifyOptions().merge(
-            StringifyOptions(encode: false),
-          ),
-    );
+    _uri.writeAll([
+      prepend(),
+      QS.encode(
+        filters,
+        _builder.model.stringifyOptions().copyWith(encode: false),
+      ),
+    ]);
   }
 
   /// Parser sorts
@@ -139,8 +142,10 @@ class Parser {
       return;
     }
 
-    _uri += prepend();
-    _uri += '${parameterNames().sort}=${_builder.sorts.join(',')}';
+    _uri.writeAll([
+      prepend(),
+      '${parameterNames().sort}=${_builder.sorts.join(',')}',
+    ]);
   }
 
   /// Parser page
@@ -149,8 +154,10 @@ class Parser {
       return;
     }
 
-    _uri += prepend();
-    _uri += '${parameterNames().page}=${_builder.pageValue}';
+    _uri.writeAll([
+      prepend(),
+      '${parameterNames().page}=${_builder.pageValue}',
+    ]);
   }
 
   /// Parser limit
@@ -159,8 +166,10 @@ class Parser {
       return;
     }
 
-    _uri += prepend();
-    _uri += '${parameterNames().limit}=${_builder.limitValue}';
+    _uri.writeAll([
+      prepend(),
+      '${parameterNames().limit}=${_builder.limitValue}',
+    ]);
   }
 
   /// Parser payload
@@ -169,12 +178,12 @@ class Parser {
       return;
     }
 
-    _uri += prepend();
-    _uri += Qs.stringify(
-      _builder.payload,
-      opts: _builder.model.stringifyOptions().merge(
-            StringifyOptions(encode: false),
-          ),
-    );
+    _uri.writeAll([
+      prepend(),
+      QS.encode(
+        _builder.payload,
+        _builder.model.stringifyOptions().copyWith(encode: false),
+      ),
+    ]);
   }
 }

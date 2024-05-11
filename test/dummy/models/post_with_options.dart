@@ -1,5 +1,5 @@
-import 'package:dart_api_query/src/qs/stringify_options.dart';
 import 'package:dart_api_query/src/schema.dart';
+import 'package:qs_dart/qs_dart.dart';
 
 final class PostWithOptions extends Schema {
   PostWithOptions([super.attributes]);
@@ -7,7 +7,6 @@ final class PostWithOptions extends Schema {
   PostWithOptions.create(super.resourceObject) : super.create();
 
   @override
-  StringifyOptions stringifyOptions() {
-    return StringifyOptions(arrayFormat: ArrayFormat.indices);
-  }
+  EncodeOptions stringifyOptions() =>
+      const EncodeOptions(listFormat: ListFormat.indices);
 }
