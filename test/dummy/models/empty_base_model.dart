@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 final class EmptyBaseModel extends Schema {
   EmptyBaseModel([super.attributes]);
 
-  EmptyBaseModel.create(super.resourceObject): super.create();
+  EmptyBaseModel.create(super.resourceObject) : super.create();
 
   static void withBaseURL() {
     baseUrlCustom = 'foo';

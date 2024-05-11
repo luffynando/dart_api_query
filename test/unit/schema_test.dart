@@ -97,10 +97,10 @@ void main() {
 
     test(
       'firstOrNull() method returns null when unauthorized',
-          () async {
+      () async {
         dioAdapter.onGet(
           'http://localhost/posts',
-              (server) => server.reply(
+          (server) => server.reply(
             401,
             <dynamic>[],
             delay: const Duration(milliseconds: 500),
