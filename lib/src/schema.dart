@@ -1,9 +1,9 @@
 import 'package:dart_api_query/src/api_query.dart';
-import 'package:dart_api_query/src/qs/stringify_options.dart';
 import 'package:dart_api_query/src/query_parameters.dart';
 import 'package:dart_api_query/src/resource_collection.dart';
 import 'package:dart_api_query/src/resource_object.dart';
 import 'package:dart_api_query/src/serializer.dart';
+import 'package:qs_dart/qs_dart.dart';
 
 /// Schemas provide getters and setters that help us transform responses into
 /// objects with their own attributes, relationships, related objects and
@@ -143,7 +143,6 @@ class Schema {
   }
 
   /// Default stringifyOptions
-  StringifyOptions stringifyOptions() {
-    return StringifyOptions(arrayFormat: ArrayFormat.comma);
-  }
+  EncodeOptions stringifyOptions() =>
+      const EncodeOptions(listFormat: ListFormat.comma);
 }

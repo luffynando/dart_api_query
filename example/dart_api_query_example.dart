@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:dart_api_query/dart_api_query.dart';
 import 'package:dio/dio.dart';
 
